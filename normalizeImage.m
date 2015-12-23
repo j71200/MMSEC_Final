@@ -40,6 +40,8 @@ syms x;
 mBeta = double(solve(mu_0_3*x^3 + 3*mu_1_2*x^2 + 3*mu_2_1*x + mu_3_0, x, 'Real', true));
 if length(mBeta) > 1
 	mBeta = sort(mBeta);
+	% disp('mBetas are ============');
+	% mBeta
 	mBeta = mBeta(2);
 end
 mBeta

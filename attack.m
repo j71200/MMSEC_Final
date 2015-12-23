@@ -51,13 +51,13 @@ elseif attackType == 4
 % Rotate without Crop
 % ================================================
 elseif attackType == 5
-	attackedImage = imrotate(originalImage, 30);
+	attackedImage = imrotate(originalImage, 5);
 
 % ================================================
 % Scale without Crop
 % ================================================
 elseif attackType == 6
-	attackedImage = imresize(originalImage, 1.5);
+	attackedImage = imresize(originalImage, 0.8);
 
 % ================================================
 % Shearing in x without Crop
