@@ -7,7 +7,7 @@ clc
 originalImage = imread('./airplane.bmp');
 [height, width, ~] = size(originalImage);
 
-attackType = 7;
+attackType = 5;
 
 % ================================================
 % Shift down with Crop
@@ -15,7 +15,7 @@ attackType = 7;
 if attackType == 1
 	shiftPixel = 200;
 	attackedImage = uint8(zeros(size(originalImage)));
-	attackedImage(shiftPixel+1:end, :, :) = originalImage(1:end-shiftPixel, :, :);
+	attackedImage(shiftPixel + 1:end, :, :) = originalImage(1:end - shiftPixel, :, :);
 
 
 % ================================================
@@ -57,7 +57,7 @@ elseif attackType == 5
 % Scale without Crop
 % ================================================
 elseif attackType == 6
-	attackedImage = imresize(originalImage, 0.8);
+	attackedImage = imresize(originalImage, 1.5);
 
 % ================================================
 % Shearing in x without Crop

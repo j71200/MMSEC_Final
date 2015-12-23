@@ -19,8 +19,8 @@ x_mean = m_1_0 / m_0_0;
 y_mean = m_0_1 / m_0_0;
 
 fTable1 = fTable;
-fTable1(:, 1) = fTable1(:, 1) - round(x_mean);
-fTable1(:, 2) = fTable1(:, 2) - round(y_mean);
+fTable1(:, 1) = fTable1(:, 1) - (x_mean);
+fTable1(:, 2) = fTable1(:, 2) - (y_mean);
 
 im1 = fTable2image(fTable1);
 if showProcessFlag
@@ -45,7 +45,7 @@ end
 mBeta
 Ax = [1 mBeta; 0 1];
 fTable2 = fTable1;
-fTable2(:, 1:2) = round(Ax * fTable2(:, 1:2)')';
+fTable2(:, 1:2) = (Ax * fTable2(:, 1:2)')';
 
 my_mu_3_0 = centralMoment(fTable2, 3, 0)
 
@@ -71,7 +71,7 @@ mGamma = - mu_1_1 / mu_2_0;
 Ay = [1 0; mGamma 1];
 
 fTable3 = fTable2;
-fTable3(:, 1:2) = round(Ay * fTable3(:, 1:2)')';
+fTable3(:, 1:2) = (Ay * fTable3(:, 1:2)')';
 
 my_mu_1_1 = centralMoment(fTable3, 1, 1)
 
@@ -118,7 +118,7 @@ end
 As = [mAlpha 0; 0 mDelta];
 
 fTable4 = fTable3;
-fTable4(:, 1:2) = floor(As * fTable4(:, 1:2)')';
+fTable4(:, 1:2) = (As * fTable4(:, 1:2)')';
 
 mu_5_0 = centralMoment(fTable4, 5, 0);
 mu_0_5 = centralMoment(fTable4, 0, 5);

@@ -2,6 +2,8 @@ function [ im ] = fTable2image( fTable )
 %FTABLE2IMAGE Summary of this function goes here
 %   Detailed explanation goes here
 
+fTable = round(fTable);
+
 [fTableSize ~] = size(fTable);
 x_min = min(fTable(:, 1));
 x_max = max(fTable(:, 1));
