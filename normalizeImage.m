@@ -18,6 +18,7 @@ m_0_1 = geoMoment(fTable, 0, 1);
 x_mean = m_1_0 / m_0_0;
 y_mean = m_0_1 / m_0_0;
 
+
 fTable1 = fTable;
 fTable1(:, 1) = fTable1(:, 1) - (x_mean);
 fTable1(:, 2) = fTable1(:, 2) - (y_mean);
