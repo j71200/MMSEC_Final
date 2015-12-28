@@ -12,6 +12,7 @@ originalImage = imread('./airplane.bmp');
 %#7 - Shearing in x without Crop
 %#8 - Shearing in y without Crop
 %#9 - Shearing in x&y without Crop
+%10 - Arbitrary matrix without Crop
 
 % ================================================
 % Shift down with Crop
@@ -174,6 +175,43 @@ elseif attackType == 9
 	attackedImage(:, :, 3) = imageCr;
 	attackedImage = ycbcr2rgb(attackedImage);
 	disp(['Shearing in x&y without Crop']);
+
+% ================================================
+% Abritrary matrix without Crop
+% ================================================
+elseif attackType == 10
+	AbrMatrix = para * rand(2);
+	disp('AbrMatrix==============start');
+	AbrMatrix(1,1)
+	det(AbrMatrix)
+	disp('AbrMatrix==============end');
+
+	tempImage = rgb2ycbcr(originalImage);
+	fTableY = constructF(tempImage(:, :, 1));
+	fTableY(:, 1:2) = round(AbrMatrix * fTableY(:, 1:2)')';
+	imageY = fTable2image(fTableY);
+
+	fTableCb = constructF(tempImage(:, :, 2));
+	fTableCb(:, 1:2) = round(AbrMatrix * fTableCb(:, 1:2)')';
+	imageCb = fTable2image(fTableCb);
+
+	fTableCr = constructF(tempImage(:, :, 3));
+	fTableCr(:, 1:2) = round(AbrMatrix * fTableCr(:, 1:2)')';
+	imageCr = fTable2image(fTableCr);
+
+	squareSum = imageY.^2 + imageCb.^2 + imageCr.^2;
+	blackEntryIdx = find(squareSum == 0);
+	imageY(blackEntryIdx) = 16;
+	imageCb(blackEntryIdx) = 128;
+	imageCr(blackEntryIdx) = 128;
+
+	[height, width] = size(imageY);
+	attackedImage = uint8(zeros(height, width, 3));
+	attackedImage(:, :, 1) = imageY;
+	attackedImage(:, :, 2) = imageCb;
+	attackedImage(:, :, 3) = imageCr;
+	attackedImage = ycbcr2rgb(attackedImage);
+	disp(['Arbitrary matrix without Crop']);
 
 end
 
