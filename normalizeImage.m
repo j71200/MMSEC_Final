@@ -45,15 +45,15 @@ if length(mBeta) > 1
 	% mBeta
 	mBeta = mBeta(2);
 end
-disp('test mBeta START ==================');
-mBeta
-mu_0_3*mBeta^3 + 3*mu_1_2*mBeta^2 + 3*mu_2_1*mBeta + mu_3_0
-disp('test mBeta END ==================');
+% disp('test mBeta START ==================');
+% mBeta
+% mu_0_3*mBeta^3 + 3*mu_1_2*mBeta^2 + 3*mu_2_1*mBeta + mu_3_0
+% disp('test mBeta END ==================');
 Ax = [1 mBeta; 0 1];
 fTable2 = fTable1;
 fTable2(:, 1:2) = (Ax * fTable2(:, 1:2)')';
 
-my_mu_3_0 = centralMoment(fTable2, 3, 0)
+% my_mu_3_0 = centralMoment(fTable2, 3, 0)
 
 im2 = fTable2image(fTable2);
 if showProcessFlag
@@ -79,7 +79,7 @@ Ay = [1 0; mGamma 1];
 fTable3 = fTable2;
 fTable3(:, 1:2) = (Ay * fTable3(:, 1:2)')';
 
-my_mu_1_1 = centralMoment(fTable3, 1, 1)
+% my_mu_1_1 = centralMoment(fTable3, 1, 1)
 
 im3 = fTable2image(fTable3);
 if showProcessFlag
@@ -96,30 +96,80 @@ end
 % fTable3 = fTable2;
 
 %% Scaling
-y_min = min(fTable3(:, 1));
-y_max = max(fTable3(:, 1));
-x_min = min(fTable3(:, 2));
-x_max = max(fTable3(:, 2));
-temp_height = y_max - y_min + 1;
-temp_width  = x_max - x_min + 1;
-mAlpha = normHeight / temp_height;
-mDelta = normWidth / temp_width;
+% y_min = min(fTable3(:, 1));
+% y_max = max(fTable3(:, 1));
+% x_min = min(fTable3(:, 2));
+% x_max = max(fTable3(:, 2));
+% temp_height = y_max - y_min + 1;
+% temp_width  = x_max - x_min + 1;
+% mAlpha = normHeight / temp_height;
+% mDelta = normWidth / temp_width;
 
-exceedHeight = max(floor(fTable3(:,1)*mAlpha)) - min(floor(fTable3(:,1)*mAlpha)) + 1 - normHeight;
-exceedWidth = max(floor(fTable3(:,2)*mDelta)) - min(floor(fTable3(:,2)*mDelta)) + 1 - normWidth;
 
-while (exceedHeight > 0) || (exceedWidth > 0)
-	if exceedHeight > 0
-		temp_height = temp_height + 1;
-		mAlpha = normHeight / temp_height;
-		exceedHeight = max(floor(fTable3(:,1)*mAlpha)) - min(floor(fTable3(:,1)*mAlpha)) + 1 - normHeight;
+% heightError = max(round(fTable3(:,1)*mAlpha)) - min(round(fTable3(:,1)*mAlpha)) + 1 - normHeight;
+% widthError = max(round(fTable3(:,2)*mDelta)) - min(round(fTable3(:,2)*mDelta)) + 1 - normWidth;
+
+x_min = min(fTable3(:, 1));
+x_max = max(fTable3(:, 1));
+y_min = min(fTable3(:, 2));
+y_max = max(fTable3(:, 2));
+height = x_max - x_min + 1;
+width  = y_max - y_min + 1;
+
+mAlphaCT = normHeight / height;
+mAlphaLB = (normHeight - 0.5) / height;
+mAlphaUB = (normHeight + 0.5) / height;
+
+mDeltaCT = normWidth / width;
+mDeltaLB = (normWidth - 0.5) / width;
+mDeltaUB = (normWidth + 0.5) / width;
+
+mAlpha = mAlphaCT;
+mDelta = mDeltaCT;
+
+x_min_scale = mAlpha * x_min;
+x_max_scale = mAlpha * x_max;
+scaleHeight = x_max_scale - x_min_scale + 1;
+y_min_scale = mDelta * y_min;
+y_max_scale = mDelta * y_max;
+scaleWidth  = y_max_scale - y_min_scale + 1;
+
+while (round(scaleHeight) ~= normHeight) || (round(scaleWidth) ~= normWidth)
+	% disp(['scaleHeight = ' num2str(scaleHeight)]);
+	% disp(['scaleWidth = ' num2str(scaleWidth)]);
+	if scaleHeight > normHeight
+		mAlpha = (mAlphaCT - mAlphaLB) * rand(1) + mAlphaLB;
+	elseif scaleHeight < normHeight
+		mAlpha = (mAlphaUB - mAlphaCT) * rand(1) + mAlphaCT;
 	end
-	if exceedWidth > 0
-		temp_width = temp_width + 1;
-		mDelta = normWidth / temp_width;
-		exceedWidth = max(floor(fTable3(:,2)*mDelta)) - min(floor(fTable3(:,2)*mDelta)) + 1 - normWidth;
+	if scaleWidth > normWidth
+		mDelta = (mDeltaCT - mDeltaLB) * rand(1) + mDeltaLB;
+	elseif scaleWidth < normWidth
+		mDelta = (mDeltaUB - mDeltaCT) * rand(1) + mDeltaCT;
 	end
+	x_min_scale = mAlpha * x_min;
+	x_max_scale = mAlpha * x_max;
+	scaleHeight = x_max_scale - x_min_scale + 1;
+	y_min_scale = mDelta * y_min;
+	y_max_scale = mDelta * y_max;
+	scaleWidth  = y_max_scale - y_min_scale + 1;
 end
+
+% exceedHeight = max(floor(fTable3(:,1)*mAlpha)) - min(floor(fTable3(:,1)*mAlpha)) + 1 - normHeight;
+% exceedWidth = max(floor(fTable3(:,2)*mDelta)) - min(floor(fTable3(:,2)*mDelta)) + 1 - normWidth;
+
+% while (exceedHeight > 0) || (exceedWidth > 0)
+% 	if exceedHeight > 0
+% 		temp_height = temp_height + 1;
+% 		mAlpha = normHeight / temp_height;
+% 		exceedHeight = max(floor(fTable3(:,1)*mAlpha)) - min(floor(fTable3(:,1)*mAlpha)) + 1 - normHeight;
+% 	end
+% 	if exceedWidth > 0
+% 		temp_width = temp_width + 1;
+% 		mDelta = normWidth / temp_width;
+% 		exceedWidth = max(floor(fTable3(:,2)*mDelta)) - min(floor(fTable3(:,2)*mDelta)) + 1 - normWidth;
+% 	end
+% end
 
 As = [mAlpha 0; 0 mDelta];
 
@@ -128,7 +178,7 @@ fTable4(:, 1:2) = (As * fTable4(:, 1:2)')';
 
 mu_5_0 = centralMoment(fTable4, 5, 0);
 mu_0_5 = centralMoment(fTable4, 0, 5);
-[mu_5_0, mu_0_5]
+% [mu_5_0, mu_0_5]
 
 if (mu_5_0 > 0) && (mu_0_5 > 0)
 	isGood = true;
