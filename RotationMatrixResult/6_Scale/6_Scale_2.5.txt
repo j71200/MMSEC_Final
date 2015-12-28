@@ -1,0 +1,16 @@
+LeftUp:
+PSNR = 13.69
+Pixel Error Rate =  0.3611
+
+RightUp:
+PSNR = 13.59
+Pixel Error Rate =  0.4349
+
+LeftDown:
+PSNR = 13.54
+Pixel Error Rate =  0.4466
+
+RightDown:
+PSNR = 13.45
+Pixel Error Rate =  0.4511
+

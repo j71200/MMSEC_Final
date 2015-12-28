@@ -45,7 +45,10 @@ if length(mBeta) > 1
 	% mBeta
 	mBeta = mBeta(2);
 end
+disp('test mBeta START ==================');
 mBeta
+mu_0_3*mBeta^3 + 3*mu_1_2*mBeta^2 + 3*mu_2_1*mBeta + mu_3_0
+disp('test mBeta END ==================');
 Ax = [1 mBeta; 0 1];
 fTable2 = fTable1;
 fTable2(:, 1:2) = (Ax * fTable2(:, 1:2)')';
@@ -68,7 +71,7 @@ end
 
 %% Shearing in y
 mu_1_1 = centralMoment(fTable2, 1, 1);
-mu_2_0 = centralMoment(fTable2, 1, 1);
+mu_2_0 = centralMoment(fTable2, 2, 0);
 mGamma = - mu_1_1 / mu_2_0;
 
 Ay = [1 0; mGamma 1];

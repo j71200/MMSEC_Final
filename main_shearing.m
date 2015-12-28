@@ -2,7 +2,7 @@ close all
 clear
 clc
 
-attackType = 9;
+attackType = 8;
 % 1 - Shift down with Crop
 %#2 - Shift down without Crop
 %#3 - Shift right without Crop
