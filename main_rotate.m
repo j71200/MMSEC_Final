@@ -2,7 +2,7 @@ close all
 clear
 clc
 
-attackType = 6;
+attackType = 9;
 % 1 - Shift down with Crop
 %#2 - Shift down without Crop
 %#3 - Shift right without Crop
@@ -19,7 +19,7 @@ paraList(2) = 200;
 paraList(3) = 200;
 paraList(4) = 30;
 paraList(5) = 30;
-paraList(6) = 1.1;
+paraList(6) = 1.5;
 paraList(7) = 1;
 paraList(8) = 1;
 paraList(9) = 1;
