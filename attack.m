@@ -1,4 +1,4 @@
-function [] = attack(attackType)
+function [] = attack(attackType, para)
 
 originalImage = imread('./airplane.bmp');
 [height, width, ~] = size(originalImage);
@@ -17,7 +17,7 @@ originalImage = imread('./airplane.bmp');
 % Shift down with Crop
 % ================================================
 if attackType == 1
-	shiftPixel = 200;
+	shiftPixel = para;
 	attackedImage = uint8(zeros(size(originalImage)));
 	attackedImage(shiftPixel + 1:end, :, :) = originalImage(1:end - shiftPixel, :, :);
 	disp(['Shift down ' num2str(shiftPixel) ' pixel with Crop']);
@@ -27,7 +27,7 @@ if attackType == 1
 % Shift down without Crop
 % ================================================
 elseif attackType == 2
-	shiftPixel = 200;
+	shiftPixel = para;
 	attackedImage = uint8(zeros(height+shiftPixel, width, 3));
 	attackedImage(1+shiftPixel:end, :, :) = originalImage;
 	disp(['Shift down ' num2str(shiftPixel) ' pixel without Crop']);
@@ -36,7 +36,7 @@ elseif attackType == 2
 % Shift right without Crop
 % ================================================
 elseif attackType == 3
-	shiftPixel = 200;
+	shiftPixel = para;
 	attackedImage = uint8(zeros(height, width+shiftPixel, 3));
 	attackedImage(:, 1+shiftPixel:end, :) = originalImage;
 	disp(['Shift right ' num2str(shiftPixel) ' pixel without Crop']);
@@ -45,7 +45,7 @@ elseif attackType == 3
 % Rotate with Crop
 % ================================================
 elseif attackType == 4
-	rotateDegree = 30;
+	rotateDegree = para;
 	rotatedImage = imrotate(originalImage, rotateDegree);
 	[temp_height, temp_width, ~] = size(rotatedImage)
 	if(temp_height > height && temp_width > width)
@@ -60,7 +60,7 @@ elseif attackType == 4
 % Rotate without Crop
 % ================================================
 elseif attackType == 5
-	rotateDegree = 30;
+	rotateDegree = para;
 	attackedImage = imrotate(originalImage, rotateDegree, 'nearest');
 	% attackedImage = imrotate(originalImage, rotateDegree, 'bilinear');
 	% attackedImage = imrotate(originalImage, rotateDegree, 'bicubic');
@@ -70,15 +70,15 @@ elseif attackType == 5
 % Scale without Crop
 % ================================================
 elseif attackType == 6
-	scale = 1.5;
-	attackedImage = imresize(originalImage, scale);
-	disp(['Scale ' num2str(scale) ' without Crop']);
+	scaleSize = para;
+	attackedImage = imresize(originalImage, scaleSize);
+	disp(['Scale ' num2str(scaleSize) ' without Crop']);
 
 % ================================================
 % Shearing in x without Crop
 % ================================================
 elseif attackType == 7
-	Ax = [1 1; 0 1];
+	Ax = [1 para; 0 1];
 
 	tempImage = rgb2ycbcr(originalImage);
 	fTableY = constructF(tempImage(:, :, 1));
@@ -111,7 +111,7 @@ elseif attackType == 7
 % Shearing in y without Crop
 % ================================================
 elseif attackType == 8
-	Ay = [1 0; 1 1];
+	Ay = [1 0; para 1];
 
 	tempImage = rgb2ycbcr(originalImage);
 	fTableY = constructF(tempImage(:, :, 1));
@@ -144,8 +144,8 @@ elseif attackType == 8
 % Shearing in x&y without Crop
 % ================================================
 elseif attackType == 9
-	Ax = [1 1; 0 1];
-	Ay = [1 0; 1 1];
+	Ax = [1 para; 0 1];
+	Ay = [1 0; para 1];
 	Axy = Ax * Ay;
 
 	tempImage = rgb2ycbcr(originalImage);

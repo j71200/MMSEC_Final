@@ -2,7 +2,7 @@ close all
 clear
 clc
 
-attackType = 6;
+attackType = 9;
 % 1 - Shift down with Crop
 %#2 - Shift down without Crop
 %#3 - Shift right without Crop
@@ -12,12 +12,24 @@ attackType = 6;
 %#7 - Shearing in x without Crop
 %#8 - Shearing in y without Crop
 %#9 - Shearing in x&y without Crop
-attack(attackType);
+attackNameList = { 'ShiftDownCrop', 'ShiftDown', 'ShiftRight', 'RotateCrop', 'Rotate', 'Scale', 'ShearingInX', 'ShearingInY', 'ShearingInXY' };
+paraList = zeros(9, 1);
+paraList(1) = 200;
+paraList(2) = 200;
+paraList(3) = 200;
+paraList(4) = 30;
+paraList(5) = 30;
+paraList(6) = 1.5;
+paraList(7) = 1;
+paraList(8) = 1;
+paraList(9) = 1;
+attack(attackType, paraList(attackType));
 
 originalImage = imread('./airplane.bmp');
 originalImage = double(rgb2gray(originalImage));
 
 suspiciousImage = imread('./airplane_attacked.bmp');
+imwrite(suspiciousImage, ['./RotationMatrixResult/' num2str(attackType) '_' attackNameList{attackType} '/' num2str(attackType) '_' attackNameList{attackType} '_' num2str(paraList(attackType)) '.png']);
 suspiciousImage = double(rgb2gray(suspiciousImage));
 
 normHeight = 512;
@@ -28,11 +40,6 @@ normWidth  = 512;
 normalOriginImage = normalizeImageRotate(originalImage, normHeight, normWidth, 0);
 normalSuspImage = normalizeImageRotate(suspiciousImage, normHeight, normWidth, 0);
 
-
-
-
-
-
 % counter = 1;
 % while (~isOriginGood || ~isSuspGood) && counter<=10
 % 	normHeight = normHeight + 50;
@@ -42,21 +49,33 @@ normalSuspImage = normalizeImageRotate(suspiciousImage, normHeight, normWidth, 0
 % 	counter = counter + 1;
 % end
 
-figure
+noi = figure;
 imshow(normalOriginImage);
+saveas(noi, ['./RotationMatrixResult/' num2str(attackType) '_' attackNameList{attackType} '/' num2str(attackType) '_' attackNameList{attackType} '_' num2str(paraList(attackType)) '_orig.png']);
 
-figure
+nsi = figure;
 imshow(normalSuspImage);
+saveas(noi, ['./RotationMatrixResult/' num2str(attackType) '_' attackNameList{attackType} '/' num2str(attackType) '_' attackNameList{attackType} '_' num2str(paraList(attackType)) '_susp.png']);
 
+
+[temp_height temp_width] = size(normalOriginImage);
+normalOriginArea = temp_height * temp_width;
 if isequal( size(normalOriginImage), size(normalSuspImage) )
-	diffImage = normalSuspImage - normalOriginImage;
-	figure
+	% diffImage = normalSuspImage - normalOriginImage;
+	diffImage = uint8(abs(double(normalSuspImage)-double(normalOriginImage)));
+	dif = figure;
 	imshow(diffImage)
 	colormap jet
 	colorbar
+	saveas(dif, ['./RotationMatrixResult/' num2str(attackType) '_' attackNameList{attackType} '/' num2str(attackType) '_' attackNameList{attackType} '_' num2str(paraList(attackType)) '_diff.png']);
+
 	nnz(diffImage)
-	nnz(diffImage) / nnz(normalOriginImage)
+	nnz(diffImage) / normalOriginArea
 	psnr(normalSuspImage, normalOriginImage)
+
+	fileID = fopen(['./RotationMatrixResult/' num2str(attackType) '_' attackNameList{attackType} '/' num2str(attackType) '_' attackNameList{attackType} '_' num2str(paraList(attackType)) '.txt'], 'w');
+	fprintf(fileID,'PSNR = %3.2f\nPixel Error Rate =  %3.4f\n', psnr(normalSuspImage, normalOriginImage), nnz(diffImage) / nnz(normalOriginImage));
+	fclose(fileID);
 else
 	disp(['size(normalOriginImage)=' num2str(size(normalOriginImage))]);
 	disp(['size(normalSuspImage)=' num2str(size(normalSuspImage))]);
@@ -66,27 +85,41 @@ else
 	leftDownImage = normalSuspImage(2:end, 1:end-1);
 	rightDownImage = normalSuspImage(2:end, 2:end);
 	
-	leftUpDiff = leftUpImage - normalOriginImage;
+	% leftUpDiff = leftUpImage - normalOriginImage;
+	leftUpDiff = uint8(abs(double(leftUpImage)-double(normalOriginImage)));
 	nnz(leftUpDiff)
-	nnz(leftUpDiff) / nnz(normalOriginImage)
+	nnz(leftUpDiff) / normalOriginArea
 	psnr(leftUpImage, normalOriginImage)
 
-	rightUpDiff = rightUpImage - normalOriginImage;
+	% rightUpDiff = rightUpImage - normalOriginImage;
+	rightUpDiff = uint8(abs(double(rightUpImage)-double(normalOriginImage)));
 	nnz(rightUpDiff)
-	nnz(rightUpDiff) / nnz(normalOriginImage)
+	nnz(rightUpDiff) / normalOriginArea
 	psnr(rightUpImage, normalOriginImage)
 
-	leftDownDiff = leftDownImage - normalOriginImage;
+	% leftDownDiff = leftDownImage - normalOriginImage;
+	leftDownDiff = uint8(abs(double(leftDownImage)-double(normalOriginImage)));
 	nnz(leftDownDiff)
-	nnz(leftDownDiff) / nnz(normalOriginImage)
+	nnz(leftDownDiff) / normalOriginArea
 	psnr(leftDownImage, normalOriginImage)
 
-	rightDownDiff = rightDownImage - normalOriginImage;
+	% rightDownDiff = rightDownImage - normalOriginImage;
+	rightDownDiff = uint8(abs(double(rightDownImage)-double(normalOriginImage)));
 	nnz(rightDownDiff)
-	nnz(rightDownDiff) / nnz(normalOriginImage)
+	nnz(rightDownDiff) / normalOriginArea
 	psnr(rightDownImage, normalOriginImage)
 
+	fileID = fopen(['./RotationMatrixResult/' num2str(attackType) '_' attackNameList{attackType} '/' num2str(attackType) '_' attackNameList{attackType} '_' num2str(paraList(attackType)) '.txt'], 'w');
+	fprintf(fileID,'LeftUp:\nPSNR = %3.2f\nPixel Error Rate =  %3.4f\n\n', psnr(leftUpImage, normalOriginImage), nnz(leftUpDiff) / normalOriginArea);
+	fprintf(fileID,'RightUp:\nPSNR = %3.2f\nPixel Error Rate =  %3.4f\n\n', psnr(rightUpImage, normalOriginImage), nnz(rightUpDiff) / normalOriginArea);
+	fprintf(fileID,'LeftDown:\nPSNR = %3.2f\nPixel Error Rate =  %3.4f\n\n', psnr(leftDownImage, normalOriginImage), nnz(leftDownDiff) / normalOriginArea);
+	fprintf(fileID,'RightDown:\nPSNR = %3.2f\nPixel Error Rate =  %3.4f\n\n', psnr(rightDownImage, normalOriginImage), nnz(rightDownDiff) / normalOriginArea);
+	fclose(fileID);
 end
+
+
+
+
 
 
 

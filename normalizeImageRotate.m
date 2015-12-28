@@ -60,7 +60,6 @@ mu_2_0 = centralMoment(fTable2, 2, 0);
 mAlpha = nthroot( mu_0_2 / mu_2_0^3 , 8 );
 mDelta = nthroot( mu_2_0 / mu_0_2^3 , 8 );
 
-% To be delete
 mAlpha = mAlpha * 1000;
 mDelta = mDelta * 1000;
 
@@ -82,7 +81,6 @@ end
 
 
 %% Rotate
-% fTable3 = fTable2;
 mu_3_0 = centralMoment(fTable3, 3, 0);
 mu_0_3 = centralMoment(fTable3, 0, 3);
 mu_1_2 = centralMoment(fTable3, 1, 2);
