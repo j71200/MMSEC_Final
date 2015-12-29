@@ -2,7 +2,7 @@ close all
 clear
 clc
 
-attackType = 5;
+attackType = 9;
 % 1 - Shift down with Crop
 %#2 - Shift down without Crop
 %#3 - Shift right without Crop
@@ -12,19 +12,17 @@ attackType = 5;
 %#7 - Shearing in x without Crop
 %#8 - Shearing in y without Crop
 %#9 - Shearing in x&y without Crop
-%10 - Arbitrary matrix without Crop
-attackNameList = { 'ShiftDownCrop', 'ShiftDown', 'ShiftRight', 'RotateCrop', 'Rotate', 'Scale', 'ShearingInX', 'ShearingInY', 'ShearingInXY', 'ArbitraryMatrix' };
-paraList = zeros(10, 1);
-paraList(1)  = 200;
-paraList(2)  = 200;
-paraList(3)  = 200;
-paraList(4)  = 30;
-paraList(5)  = 30;
-paraList(6)  = 1.5;
-paraList(7)  = 1;
-paraList(8)  = 1;
-paraList(9)  = 1;
-paraList(10) = 2;
+attackNameList = { 'ShiftDownCrop', 'ShiftDown', 'ShiftRight', 'RotateCrop', 'Rotate', 'Scale', 'ShearingInX', 'ShearingInY', 'ShearingInXY' };
+paraList = zeros(9, 1);
+paraList(1) = 200;
+paraList(2) = 200;
+paraList(3) = 200;
+paraList(4) = 30;
+paraList(5) = 30;
+paraList(6) = 1.5;
+paraList(7) = 1;
+paraList(8) = 1;
+paraList(9) = 1;
 attack(attackType, paraList(attackType));
 
 originalImage = imread('./airplane.bmp');
@@ -36,6 +34,8 @@ suspiciousImage = double(rgb2gray(suspiciousImage));
 
 normHeight = 512;
 normWidth  = 512;
+% [normalOriginImage, isOriginGood] = normalizeImage(originalImage, normHeight, normWidth, 0);
+% [normalSuspImage, isSuspGood] = normalizeImage(suspiciousImage, normHeight, normWidth, 0);
 
 normalOriginImage = normalizeImage(originalImage, normHeight, normWidth, 0);
 normalSuspImage = normalizeImage(suspiciousImage, normHeight, normWidth, 0);

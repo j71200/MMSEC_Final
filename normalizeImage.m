@@ -1,4 +1,4 @@
-function [ normalizedImg, isGood ] = normalizeImage( inputImage, normHeight, normWidth, showProcessFlag)
+function [ normalizedImg ] = normalizeImage( inputImage, normHeight, normWidth, showProcessFlag)
 %NORMALIZEIMAGE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -135,8 +135,9 @@ y_max_scale = mDelta * y_max;
 scaleWidth  = y_max_scale - y_min_scale + 1;
 
 while (round(scaleHeight) ~= normHeight) || (round(scaleWidth) ~= normWidth)
-	% disp(['scaleHeight = ' num2str(scaleHeight)]);
-	% disp(['scaleWidth = ' num2str(scaleWidth)]);
+	disp(['scaleHeight = ' num2str(round(scaleHeight))]);
+	disp(['scaleWidth = ' num2str(round(scaleWidth))]);
+	disp(['mAlpha = ' num2str(mAlpha)]);
 	if scaleHeight > normHeight
 		mAlpha = (mAlphaCT - mAlphaLB) * rand(1) + mAlphaLB;
 	elseif scaleHeight < normHeight
@@ -176,15 +177,15 @@ As = [mAlpha 0; 0 mDelta];
 fTable4 = fTable3;
 fTable4(:, 1:2) = (As * fTable4(:, 1:2)')';
 
-mu_5_0 = centralMoment(fTable4, 5, 0);
-mu_0_5 = centralMoment(fTable4, 0, 5);
+% mu_5_0 = centralMoment(fTable4, 5, 0);
+% mu_0_5 = centralMoment(fTable4, 0, 5);
 % [mu_5_0, mu_0_5]
 
-if (mu_5_0 > 0) && (mu_0_5 > 0)
-	isGood = true;
-else
-	isGood = false;
-end
+% if (mu_5_0 > 0) && (mu_0_5 > 0)
+% 	isGood = true;
+% else
+% 	isGood = false;
+% end
 
 im4 = fTable2image(fTable4);
 if showProcessFlag

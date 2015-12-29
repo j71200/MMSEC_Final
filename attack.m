@@ -1,4 +1,4 @@
-function [] = attack(attackType, para)
+function attackedImage = attack(attackType, para)
 
 originalImage = imread('./airplane.bmp');
 [height, width, ~] = size(originalImage);
