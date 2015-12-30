@@ -2,24 +2,25 @@ close all
 clear('all');
 clc
 
+% wmSize = 8*1024*8; % 8KB
+wmSize = 256; % 8KB
+watermark = randi([0, 1], wmSize, 1);
+patternSize = 256 * 256; % 必須大於大於 wmSize才行
+patterns = sign(randn(patternSize, wmSize));
 
-originalImage = imread('./Experiment/peppers.bmp');
-% originalImage = rgb2ycbcr(originalImage);
-% originalImageY = originalImage(:, :, 1);
-originalImage = rgb2gray(originalImage);
+% wmSignature1 = patterns * (2*watermark_8KB-1);
+% wmSignature2 = 
 
-imwrite(originalImage, './Experiment/peppers_gray.bmp')
-% figure;
-% imshow(originalImage);
 
-% originalDCT = dct2(originalImage);
-% x = 256;
-% y = 256;
-% % originalDCT(x:x+3, y:y+3)
-% originalDCT(x, y) = originalDCT(x, y) + 8888;
-% % originalDCT(x:x+3, y:y+3)
 
-% modifiedImage = uint8(idct2(originalDCT));
+% corMatrix = patterns' * wmSignature1;
+% recoveredWM = corMatrix > 0;
+% n = nnz(watermark_8KB - recoveredWM)
+% 100*n/wmSize
 
-% figure;
-% imshow(modifiedImage);
+
+save('data_wm256_pt256x256.mat');
+
+
+
+

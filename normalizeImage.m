@@ -1,4 +1,4 @@
-function [ normalizedImg ] = normalizeImage( inputImage, normHeight, normWidth, showProcessFlag)
+function [ normalizedImg, normFTable, SYXMatrix, meanVector ] = normalizeImage( inputImage, normHeight, normWidth, showProcessFlag)
 %NORMALIZEIMAGE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -17,11 +17,11 @@ m_0_0 = geoMoment(fTable, 0, 0);
 m_0_1 = geoMoment(fTable, 0, 1);
 x_mean = m_1_0 / m_0_0;
 y_mean = m_0_1 / m_0_0;
-
+meanVector = [x_mean; y_mean];
 
 fTable1 = fTable;
-fTable1(:, 1) = fTable1(:, 1) - (x_mean);
-fTable1(:, 2) = fTable1(:, 2) - (y_mean);
+fTable1(:, 1) = fTable1(:, 1) - x_mean;
+fTable1(:, 2) = fTable1(:, 2) - y_mean;
 
 im1 = fTable2image(fTable1);
 if showProcessFlag
@@ -194,7 +194,10 @@ if showProcessFlag
 	figure;
 	imshow(im4);
 end
+
 normalizedImg = im4;
+normFTable = fTable4;
+SYXMatrix = As * Ay * Ax;
 
 end
 
