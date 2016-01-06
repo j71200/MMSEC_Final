@@ -3,31 +3,29 @@ function attackedImage = attack(attackType, para)
 originalImage = imread('./airplane.bmp');
 [height, width, ~] = size(originalImage);
 
-% 1 - Shift down with Crop
-%#2 - Shift down without Crop
-%#3 - Shift right without Crop
-% 4 - Rotate with Crop
-%#5 - Rotate without Crop
-%#6 - Scale without Crop
-%#7 - Shearing in x without Crop
-%#8 - Shearing in y without Crop
-%#9 - Shearing in x&y without Crop
-%10 - Arbitrary matrix without Crop
+%1 - Shift down without Crop
+%2 - Shift right without Crop
+%3 - Rotate without Crop
+%4 - Scale without Crop
+%5 - Shearing in x without Crop
+%6 - Shearing in y without Crop
+%7 - Shearing in x&y without Crop
+%8 - Arbitrary matrix without Crop
 
 % ================================================
 % Shift down with Crop
 % ================================================
-if attackType == 1
-	shiftPixel = para;
-	attackedImage = uint8(zeros(size(originalImage)));
-	attackedImage(shiftPixel + 1:end, :, :) = originalImage(1:end - shiftPixel, :, :);
-	disp(['Shift down ' num2str(shiftPixel) ' pixel with Crop']);
+% if attackType == 1
+% 	shiftPixel = para;
+% 	attackedImage = uint8(zeros(size(originalImage)));
+% 	attackedImage(shiftPixel + 1:end, :, :) = originalImage(1:end - shiftPixel, :, :);
+% 	disp(['Shift down ' num2str(shiftPixel) ' pixel with Crop']);
 
 
 % ================================================
 % Shift down without Crop
 % ================================================
-elseif attackType == 2
+if attackType == 1
 	shiftPixel = para;
 	attackedImage = uint8(zeros(height+shiftPixel, width, 3));
 	attackedImage(1+shiftPixel:end, :, :) = originalImage;
@@ -36,7 +34,7 @@ elseif attackType == 2
 % ================================================
 % Shift right without Crop
 % ================================================
-elseif attackType == 3
+elseif attackType == 2
 	shiftPixel = para;
 	attackedImage = uint8(zeros(height, width+shiftPixel, 3));
 	attackedImage(:, 1+shiftPixel:end, :) = originalImage;
@@ -45,22 +43,22 @@ elseif attackType == 3
 % ================================================
 % Rotate with Crop
 % ================================================
-elseif attackType == 4
-	rotateDegree = para;
-	rotatedImage = imrotate(originalImage, rotateDegree);
-	[temp_height, temp_width, ~] = size(rotatedImage)
-	if(temp_height > height && temp_width > width)
-		% Croping
-		topMargin = floor((temp_height - height)/2);
-		leftMargin = floor((temp_width - width)/2);
-		attackedImage = rotatedImage(topMargin+1:topMargin+height, leftMargin+1:leftMargin+width, :);
-	end
-	disp(['Rotate ' num2str(rotateDegree) ' degree with Crop']);
+% elseif attackType == 4
+% 	rotateDegree = para;
+% 	rotatedImage = imrotate(originalImage, rotateDegree);
+% 	[temp_height, temp_width, ~] = size(rotatedImage)
+% 	if(temp_height > height && temp_width > width)
+% 		% Croping
+% 		topMargin = floor((temp_height - height)/2);
+% 		leftMargin = floor((temp_width - width)/2);
+% 		attackedImage = rotatedImage(topMargin+1:topMargin+height, leftMargin+1:leftMargin+width, :);
+% 	end
+% 	disp(['Rotate ' num2str(rotateDegree) ' degree with Crop']);
 
 % ================================================
 % Rotate without Crop
 % ================================================
-elseif attackType == 5
+elseif attackType == 3
 	rotateDegree = para;
 	attackedImage = imrotate(originalImage, rotateDegree, 'nearest');
 	% attackedImage = imrotate(originalImage, rotateDegree, 'bilinear');
@@ -70,7 +68,7 @@ elseif attackType == 5
 % ================================================
 % Scale without Crop
 % ================================================
-elseif attackType == 6
+elseif attackType == 4
 	scaleSize = para;
 	attackedImage = imresize(originalImage, scaleSize);
 	disp(['Scale ' num2str(scaleSize) ' without Crop']);
@@ -78,7 +76,7 @@ elseif attackType == 6
 % ================================================
 % Shearing in x without Crop
 % ================================================
-elseif attackType == 7
+elseif attackType == 5
 	Ax = [1 para; 0 1];
 
 	tempImage = rgb2ycbcr(originalImage);
@@ -111,7 +109,7 @@ elseif attackType == 7
 % ================================================
 % Shearing in y without Crop
 % ================================================
-elseif attackType == 8
+elseif attackType == 6
 	Ay = [1 0; para 1];
 
 	tempImage = rgb2ycbcr(originalImage);
@@ -144,7 +142,7 @@ elseif attackType == 8
 % ================================================
 % Shearing in x&y without Crop
 % ================================================
-elseif attackType == 9
+elseif attackType == 7
 	Ax = [1 para; 0 1];
 	Ay = [1 0; para 1];
 	Axy = Ax * Ay;
@@ -179,7 +177,7 @@ elseif attackType == 9
 % ================================================
 % Abritrary matrix without Crop
 % ================================================
-elseif attackType == 10
+elseif attackType == 8
 	AbrMatrix = para * rand(2);
 	disp('AbrMatrix==============start');
 	AbrMatrix(1,1)

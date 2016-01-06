@@ -94,8 +94,8 @@ x_min = min(fTable3(:, 1));
 x_max = max(fTable3(:, 1));
 y_min = min(fTable3(:, 2));
 y_max = max(fTable3(:, 2));
-height = x_max - x_min + 1
-width  = y_max - y_min + 1
+height = x_max - x_min + 1;
+width  = y_max - y_min + 1;
 
 mAlphaCT = normHeight / height;
 mAlphaLB = (normHeight - 0.5) / height;
@@ -109,29 +109,29 @@ mAlpha = mAlphaCT;
 mDelta = mDeltaCT;
 
 
-x_min_scale = mAlpha * x_min;
-x_max_scale = mAlpha * x_max;
+x_min_scale = round(mAlpha * x_min);
+x_max_scale = round(mAlpha * x_max);
 scaleHeight = x_max_scale - x_min_scale + 1;
-y_min_scale = mDelta * y_min;
-y_max_scale = mDelta * y_max;
+y_min_scale = round(mDelta * y_min);
+y_max_scale = round(mDelta * y_max);
 scaleWidth  = y_max_scale - y_min_scale + 1;
 
-disp(['scaleHeight = ' num2str(round(scaleHeight))]);
-disp(['scaleWidth = ' num2str(round(scaleWidth))]);
-disp(['mAlpha = ' num2str(mAlpha)]);
-disp(['mDelta = ' num2str(mDelta)]);
+% disp(['scaleHeight = ' num2str(scaleHeight)]);
+% disp(['scaleWidth = ' num2str(scaleWidth)]);
+% disp(['mAlpha = ' num2str(mAlpha)]);
+% disp(['mDelta = ' num2str(mDelta)]);
 
 % counter = 0;
-while (round(scaleHeight) ~= normHeight) || (round(scaleWidth) ~= normWidth)
+while (scaleHeight ~= normHeight) || (scaleWidth ~= normWidth)
 	% counter  = counter + 1;
 	% if counter > 10
 	% 	break;
 	% end
 
-	disp(['scaleHeight = ' num2str(round(scaleHeight))]);
-	disp(['scaleWidth = ' num2str(round(scaleWidth))]);
-	disp(['mAlpha = ' num2str(mAlpha)]);
-	disp(['mDelta = ' num2str(mDelta)]);
+	% disp(['scaleHeight = ' num2str(scaleHeight)]);
+	% disp(['scaleWidth = ' num2str(scaleWidth)]);
+	% disp(['mAlpha = ' num2str(mAlpha)]);
+	% disp(['mDelta = ' num2str(mDelta)]);
 	if scaleHeight > normHeight
 		mAlpha = (mAlphaCT - mAlphaLB) * rand(1) + mAlphaLB;
 	elseif scaleHeight < normHeight
@@ -142,18 +142,18 @@ while (round(scaleHeight) ~= normHeight) || (round(scaleWidth) ~= normWidth)
 	elseif scaleWidth < normWidth
 		mDelta = (mDeltaUB - mDeltaCT) * rand(1) + mDeltaCT;
 	end
-	x_min_scale = mAlpha * x_min;
-	x_max_scale = mAlpha * x_max;
+	x_min_scale = round(mAlpha * x_min);
+	x_max_scale = round(mAlpha * x_max);
 	scaleHeight = x_max_scale - x_min_scale + 1;
-	y_min_scale = mDelta * y_min;
-	y_max_scale = mDelta * y_max;
+	y_min_scale = round(mDelta * y_min);
+	y_max_scale = round(mDelta * y_max);
 	scaleWidth  = y_max_scale - y_min_scale + 1;
 end
 
-disp(['scaleHeight = ' num2str(round(scaleHeight))]);
-disp(['scaleWidth = ' num2str(round(scaleWidth))]);
-disp(['mAlpha = ' num2str(mAlpha)]);
-disp(['mDelta = ' num2str(mDelta)]);
+% disp(['scaleHeight = ' num2str(scaleHeight)]);
+% disp(['scaleWidth = ' num2str(scaleWidth)]);
+% disp(['mAlpha = ' num2str(mAlpha)]);
+% disp(['mDelta = ' num2str(mDelta)]);
 
 As = [mAlpha 0; 0 mDelta];
 
@@ -169,8 +169,6 @@ fTable4(:, 1:2) = (As * fTable4(:, 1:2)')';
 % else
 % 	isGood = false;
 % end
-
-fTable4
 
 im4 = fTable2image(fTable4);
 if showProcessFlag
