@@ -2,18 +2,25 @@ close all
 clear
 clc
 
-originalImage = imread('./Experiment/peppers_gray.bmp');
-figure
-imshow(originalImage)
+% originalImage = imread('./Experiment/airplane.bmp');
+originalImage = imread('./Experiment/airplane.bmp');
+originalImage = rgb2gray(originalImage);
+% originalImage = imread('./Experiment/peppers_gray.bmp');
+% figure
+% imshow(originalImage)
+% title('originalImage')
 originalImage_dbl = double(originalImage);
 
 % ==========================
-% Normalization
+% Normalization I - Original
 % ==========================
 normHeight = 512;
 normWidth  = 512;
 [normalOriginImage_dbl, normFTable, SYXMatrix, meanVector] = normalizeImage(originalImage_dbl, normHeight, normWidth, false);
 normalOriginImage = uint8(normalOriginImage_dbl);
+figure
+imshow(normalOriginImage)
+title('normalOriginImage')
 
 % ==========================
 % Embedding Watermark
@@ -53,30 +60,97 @@ wmSignature = maskImage .* wmSignature2_idct;
 % recoverImg = fTable2image(normFTable);
 % figure
 % imshow(recoverImg)
-wmSignFTable = constructF(wmSignature);
+wmSignFTable = img2ftable(wmSignature);
 wmSignFTable(:, 1:2) = (SYXMatrix^(-1) * wmSignFTable(:, 1:2)')';
 wmSignFTable(:, 1) = wmSignFTable(:, 1) + meanVector(1);
 wmSignFTable(:, 2) = wmSignFTable(:, 2) + meanVector(2);
 
 wmSignature_reg = fTable2image(wmSignFTable);
 
-% % Step 6
-size(originalImage_dbl)
-size(wmSignature_reg)
-
+% Step 6
+% size(originalImage_dbl)
+% size(wmSignature_reg)
 wmSignature_reg = double(wmSignature_reg);
 wmImage = originalImage_dbl + wmSignature_reg(2:end-1, 2:end-1);
 wmImage = uint8(wmImage);
 
 figure
 imshow(wmImage)
+title('wmImage')
 
 % ==========================
 % Attack
 % ==========================
-attWMImage = attack2(wmImage, 2, 200);
+attackType = 5;
+% 1 - Shift down with Crop
+%#2 - Shift down without Crop
+%#3 - Shift right without Crop
+% 4 - Rotate with Crop
+%#5 - Rotate without Crop
+%#6 - Scale without Crop
+%#7 - Shearing in x without Crop
+%#8 - Shearing in y without Crop
+%#9 - Shearing in x&y without Crop
+%10 - Arbitrary matrix without Crop
+paraList = zeros(10, 1);
+paraList(1)  = 200;
+paraList(2)  = 200;
+paraList(3)  = 200;
+paraList(4)  = 30;
+paraList(5)  = 30;
+paraList(6)  = 1.5;
+paraList(7)  = 1;
+paraList(8)  = 1;
+paraList(9)  = 1;
+paraList(10) = 2;
+attWMImage = attackGray(wmImage, attackType, paraList(attackType));
 figure
 imshow(attWMImage)
+title('attWMImage')
+
+% To be deleted
+% attWMImage = wmImage;
+
+% ==========================
+% Normalization II - Attack
+% ==========================
+attWMImage_dbl = double(attWMImage);
+[normalAttImage_dbl, normAttFTable, attSYXMatrix, attMeanVector] = normalizeImage(attWMImage_dbl, normHeight, normWidth, false);
+disp('!!!!!!');
+size(normalAttImage_dbl)
+disp('!!!!!!');
+normalAttImage = uint8(normalAttImage_dbl);
+figure
+imshow(normalAttImage)
+title('normalAttImage')
+
+% ==========================
+% Extraction
+% ==========================
+% Step 2-(a)
+% Regenerate the watermark patterns - DONE
+
+% Step 2-(b)
+normalAttImage_dct = dct2(normalAttImage);
+
+% Step 2-(c)
+% middle_band_idx = zigzagColMajor(1+3*imageArea/8:3*imageArea/8 + patternSize);
+% wmSignature2(middle_band_idx) = wmSignature1;
+cw = normalAttImage_dct(middle_band_idx);
+
+% Step 2-(d)
+extractedWM = patterns' * cw;
+extractedWM = extractedWM > 0;
+
+wmDiff = extractedWM - watermark;
+% [watermark extractedWM]
+bitErrorRate = 100 * nnz(wmDiff) / length(watermark)
+
+
+
+
+
+
 
 
 

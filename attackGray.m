@@ -1,7 +1,7 @@
-function attackedImage = attack2(originalImage, attackType, para)
+function attackedImage = attackGray(originalImage, attackType, para)
 
 % originalImage = imread('./airplane.bmp');
-[height, width, ~] = size(originalImage);
+[height, width] = size(originalImage);
 
 % 1 - Shift down with Crop
 %#2 - Shift down without Crop
@@ -20,7 +20,7 @@ function attackedImage = attack2(originalImage, attackType, para)
 if attackType == 1
 	shiftPixel = para;
 	attackedImage = uint8(zeros(size(originalImage)));
-	attackedImage(shiftPixel + 1:end, :, :) = originalImage(1:end - shiftPixel, :, :);
+	attackedImage(shiftPixel + 1:end, :) = originalImage(1:end - shiftPixel, :);
 	disp(['Shift down ' num2str(shiftPixel) ' pixel with Crop']);
 
 
@@ -29,8 +29,8 @@ if attackType == 1
 % ================================================
 elseif attackType == 2
 	shiftPixel = para;
-	attackedImage = uint8(zeros(height+shiftPixel, width, 3));
-	attackedImage(1+shiftPixel:end, :, :) = originalImage;
+	attackedImage = uint8(zeros(height+shiftPixel, width));
+	attackedImage(1+shiftPixel:end, :) = originalImage;
 	disp(['Shift down ' num2str(shiftPixel) ' pixel without Crop']);
 
 % ================================================
@@ -38,8 +38,8 @@ elseif attackType == 2
 % ================================================
 elseif attackType == 3
 	shiftPixel = para;
-	attackedImage = uint8(zeros(height, width+shiftPixel, 3));
-	attackedImage(:, 1+shiftPixel:end, :) = originalImage;
+	attackedImage = uint8(zeros(height, width+shiftPixel));
+	attackedImage(:, 1+shiftPixel:end) = originalImage;
 	disp(['Shift right ' num2str(shiftPixel) ' pixel without Crop']);
 
 % ================================================
@@ -48,12 +48,12 @@ elseif attackType == 3
 elseif attackType == 4
 	rotateDegree = para;
 	rotatedImage = imrotate(originalImage, rotateDegree);
-	[temp_height, temp_width, ~] = size(rotatedImage)
+	[temp_height, temp_width] = size(rotatedImage)
 	if(temp_height > height && temp_width > width)
 		% Croping
 		topMargin = floor((temp_height - height)/2);
 		leftMargin = floor((temp_width - width)/2);
-		attackedImage = rotatedImage(topMargin+1:topMargin+height, leftMargin+1:leftMargin+width, :);
+		attackedImage = rotatedImage(topMargin+1:topMargin+height, leftMargin+1:leftMargin+width);
 	end
 	disp(['Rotate ' num2str(rotateDegree) ' degree with Crop']);
 
@@ -81,31 +81,35 @@ elseif attackType == 6
 elseif attackType == 7
 	Ax = [1 para; 0 1];
 
-	tempImage = rgb2ycbcr(originalImage);
-	fTableY = constructF(tempImage(:, :, 1));
-	fTableY(:, 1:2) = round(Ax * fTableY(:, 1:2)')';
-	imageY = fTable2image(fTableY);
+	% tempImage = rgb2ycbcr(originalImage);
+	% fTableY = img2ftable(tempImage(:, :, 1));
+	% fTableY(:, 1:2) = round(Ax * fTableY(:, 1:2)')';
+	% imageY = fTable2image(fTableY);
 
-	fTableCb = constructF(tempImage(:, :, 2));
-	fTableCb(:, 1:2) = round(Ax * fTableCb(:, 1:2)')';
-	imageCb = fTable2image(fTableCb);
+	% fTableCb = img2ftable(tempImage(:, :, 2));
+	% fTableCb(:, 1:2) = round(Ax * fTableCb(:, 1:2)')';
+	% imageCb = fTable2image(fTableCb);
 
-	fTableCr = constructF(tempImage(:, :, 3));
-	fTableCr(:, 1:2) = round(Ax * fTableCr(:, 1:2)')';
-	imageCr = fTable2image(fTableCr);
+	% fTableCr = img2ftable(tempImage(:, :, 3));
+	% fTableCr(:, 1:2) = round(Ax * fTableCr(:, 1:2)')';
+	% imageCr = fTable2image(fTableCr);
 
-	squareSum = imageY.^2 + imageCb.^2 + imageCr.^2;
-	blackEntryIdx = find(squareSum == 0);
-	imageY(blackEntryIdx) = 16;
-	imageCb(blackEntryIdx) = 128;
-	imageCr(blackEntryIdx) = 128;
+	% squareSum = imageY.^2 + imageCb.^2 + imageCr.^2;
+	% blackEntryIdx = find(squareSum == 0);
+	% imageY(blackEntryIdx) = 16;
+	% imageCb(blackEntryIdx) = 128;
+	% imageCr(blackEntryIdx) = 128;
 
-	[height, width] = size(imageY);
-	attackedImage = uint8(zeros(height, width, 3));
-	attackedImage(:, :, 1) = imageY;
-	attackedImage(:, :, 2) = imageCb;
-	attackedImage(:, :, 3) = imageCr;
-	attackedImage = ycbcr2rgb(attackedImage);
+	fTable = img2ftable(originalImage);
+	fTable(:, 1:2) = round(Ax * fTable(:, 1:2)')';
+	attackedImage = fTable2image(fTable);
+
+	% [height, width] = size(imageY);
+	% attackedImage = uint8(zeros(height, width, 3));
+	% attackedImage(:, :, 1) = imageY;
+	% attackedImage(:, :, 2) = imageCb;
+	% attackedImage(:, :, 3) = imageCr;
+	% attackedImage = ycbcr2rgb(attackedImage);
 	disp(['Shearing in x without Crop']);
 
 % ================================================
@@ -114,31 +118,35 @@ elseif attackType == 7
 elseif attackType == 8
 	Ay = [1 0; para 1];
 
-	tempImage = rgb2ycbcr(originalImage);
-	fTableY = constructF(tempImage(:, :, 1));
-	fTableY(:, 1:2) = round(Ay * fTableY(:, 1:2)')';
-	imageY = fTable2image(fTableY);
+	fTable = img2ftable(originalImage);
+	fTable(:, 1:2) = round(Ay * fTable(:, 1:2)')';
+	attackedImage = fTable2image(fTable);
 
-	fTableCb = constructF(tempImage(:, :, 2));
-	fTableCb(:, 1:2) = round(Ay * fTableCb(:, 1:2)')';
-	imageCb = fTable2image(fTableCb);
+	% tempImage = rgb2ycbcr(originalImage);
+	% fTableY = img2ftable(tempImage(:, :, 1));
+	% fTableY(:, 1:2) = round(Ay * fTableY(:, 1:2)')';
+	% imageY = fTable2image(fTableY);
 
-	fTableCr = constructF(tempImage(:, :, 3));
-	fTableCr(:, 1:2) = round(Ay * fTableCr(:, 1:2)')';
-	imageCr = fTable2image(fTableCr);
+	% fTableCb = img2ftable(tempImage(:, :, 2));
+	% fTableCb(:, 1:2) = round(Ay * fTableCb(:, 1:2)')';
+	% imageCb = fTable2image(fTableCb);
 
-	squareSum = imageY.^2 + imageCb.^2 + imageCr.^2;
-	blackEntryIdx = find(squareSum == 0);
-	imageY(blackEntryIdx) = 16;
-	imageCb(blackEntryIdx) = 128;
-	imageCr(blackEntryIdx) = 128;
+	% fTableCr = img2ftable(tempImage(:, :, 3));
+	% fTableCr(:, 1:2) = round(Ay * fTableCr(:, 1:2)')';
+	% imageCr = fTable2image(fTableCr);
 
-	[height, width] = size(imageY);
-	attackedImage = uint8(zeros(height, width, 3));
-	attackedImage(:, :, 1) = imageY;
-	attackedImage(:, :, 2) = imageCb;
-	attackedImage(:, :, 3) = imageCr;
-	attackedImage = ycbcr2rgb(attackedImage);
+	% squareSum = imageY.^2 + imageCb.^2 + imageCr.^2;
+	% blackEntryIdx = find(squareSum == 0);
+	% imageY(blackEntryIdx) = 16;
+	% imageCb(blackEntryIdx) = 128;
+	% imageCr(blackEntryIdx) = 128;
+
+	% [height, width] = size(imageY);
+	% attackedImage = uint8(zeros(height, width, 3));
+	% attackedImage(:, :, 1) = imageY;
+	% attackedImage(:, :, 2) = imageCb;
+	% attackedImage(:, :, 3) = imageCr;
+	% attackedImage = ycbcr2rgb(attackedImage);
 	disp(['Shearing in y without Crop']);
 
 % ================================================
@@ -149,31 +157,35 @@ elseif attackType == 9
 	Ay = [1 0; para 1];
 	Axy = Ax * Ay;
 
-	tempImage = rgb2ycbcr(originalImage);
-	fTableY = constructF(tempImage(:, :, 1));
-	fTableY(:, 1:2) = round(Axy * fTableY(:, 1:2)')';
-	imageY = fTable2image(fTableY);
+	fTable = img2ftable(originalImage);
+	fTable(:, 1:2) = round(Axy * fTable(:, 1:2)')';
+	attackedImage = fTable2image(fTable);
 
-	fTableCb = constructF(tempImage(:, :, 2));
-	fTableCb(:, 1:2) = round(Axy * fTableCb(:, 1:2)')';
-	imageCb = fTable2image(fTableCb);
+	% tempImage = rgb2ycbcr(originalImage);
+	% fTableY = img2ftable(tempImage(:, :, 1));
+	% fTableY(:, 1:2) = round(Axy * fTableY(:, 1:2)')';
+	% imageY = fTable2image(fTableY);
 
-	fTableCr = constructF(tempImage(:, :, 3));
-	fTableCr(:, 1:2) = round(Axy * fTableCr(:, 1:2)')';
-	imageCr = fTable2image(fTableCr);
+	% fTableCb = img2ftable(tempImage(:, :, 2));
+	% fTableCb(:, 1:2) = round(Axy * fTableCb(:, 1:2)')';
+	% imageCb = fTable2image(fTableCb);
 
-	squareSum = imageY.^2 + imageCb.^2 + imageCr.^2;
-	blackEntryIdx = find(squareSum == 0);
-	imageY(blackEntryIdx) = 16;
-	imageCb(blackEntryIdx) = 128;
-	imageCr(blackEntryIdx) = 128;
+	% fTableCr = img2ftable(tempImage(:, :, 3));
+	% fTableCr(:, 1:2) = round(Axy * fTableCr(:, 1:2)')';
+	% imageCr = fTable2image(fTableCr);
 
-	[height, width] = size(imageY);
-	attackedImage = uint8(zeros(height, width, 3));
-	attackedImage(:, :, 1) = imageY;
-	attackedImage(:, :, 2) = imageCb;
-	attackedImage(:, :, 3) = imageCr;
-	attackedImage = ycbcr2rgb(attackedImage);
+	% squareSum = imageY.^2 + imageCb.^2 + imageCr.^2;
+	% blackEntryIdx = find(squareSum == 0);
+	% imageY(blackEntryIdx) = 16;
+	% imageCb(blackEntryIdx) = 128;
+	% imageCr(blackEntryIdx) = 128;
+
+	% [height, width] = size(imageY);
+	% attackedImage = uint8(zeros(height, width, 3));
+	% attackedImage(:, :, 1) = imageY;
+	% attackedImage(:, :, 2) = imageCb;
+	% attackedImage(:, :, 3) = imageCr;
+	% attackedImage = ycbcr2rgb(attackedImage);
 	disp(['Shearing in x&y without Crop']);
 
 % ================================================
@@ -187,15 +199,15 @@ elseif attackType == 10
 	disp('AbrMatrix==============end');
 
 	tempImage = rgb2ycbcr(originalImage);
-	fTableY = constructF(tempImage(:, :, 1));
+	fTableY = img2ftable(tempImage(:, :, 1));
 	fTableY(:, 1:2) = round(AbrMatrix * fTableY(:, 1:2)')';
 	imageY = fTable2image(fTableY);
 
-	fTableCb = constructF(tempImage(:, :, 2));
+	fTableCb = img2ftable(tempImage(:, :, 2));
 	fTableCb(:, 1:2) = round(AbrMatrix * fTableCb(:, 1:2)')';
 	imageCb = fTable2image(fTableCb);
 
-	fTableCr = constructF(tempImage(:, :, 3));
+	fTableCr = img2ftable(tempImage(:, :, 3));
 	fTableCr(:, 1:2) = round(AbrMatrix * fTableCr(:, 1:2)')';
 	imageCr = fTable2image(fTableCr);
 

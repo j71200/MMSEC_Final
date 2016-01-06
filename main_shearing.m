@@ -27,10 +27,10 @@ paraList(9)  = 1;
 paraList(10) = 2;
 attack(attackType, paraList(attackType));
 
-originalImage = imread('./airplane.bmp');
+originalImage = imread('./Experiment/peppers.bmp');
 originalImage = double(rgb2gray(originalImage));
 
-suspiciousImage = imread('./airplane_attacked.bmp');
+suspiciousImage = imread('./peppers_attacked.bmp');
 imwrite(suspiciousImage, ['./ShearingMatrixResult/' num2str(attackType) '_' attackNameList{attackType} '/' num2str(attackType) '_' attackNameList{attackType} '_' num2str(paraList(attackType)) '.png']);
 suspiciousImage = double(rgb2gray(suspiciousImage));
 

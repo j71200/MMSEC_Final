@@ -1,5 +1,5 @@
-function [ fTable ] = constructF( inputImage )
-%CONSTRUCTF Summary of this function goes here
+function [ fTable ] = img2ftable( inputImage )
+%img2ftable Summary of this function goes here
 %   Detailed explanation goes here
 
 [height width] = size(inputImage);

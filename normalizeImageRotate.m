@@ -5,7 +5,7 @@ function [ normalizedImg ] = normalizeImageRotate( inputImage, normHeight, normW
 [height width] = size(inputImage);
 
 
-fTable = constructF( inputImage );
+fTable = img2ftable( inputImage );
 if showProcessFlag
 	disp('fTable(1:10,:)')
 	disp(fTable(1:10,:))

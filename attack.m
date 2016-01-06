@@ -82,15 +82,15 @@ elseif attackType == 7
 	Ax = [1 para; 0 1];
 
 	tempImage = rgb2ycbcr(originalImage);
-	fTableY = constructF(tempImage(:, :, 1));
+	fTableY = img2ftable(tempImage(:, :, 1));
 	fTableY(:, 1:2) = round(Ax * fTableY(:, 1:2)')';
 	imageY = fTable2image(fTableY);
 
-	fTableCb = constructF(tempImage(:, :, 2));
+	fTableCb = img2ftable(tempImage(:, :, 2));
 	fTableCb(:, 1:2) = round(Ax * fTableCb(:, 1:2)')';
 	imageCb = fTable2image(fTableCb);
 
-	fTableCr = constructF(tempImage(:, :, 3));
+	fTableCr = img2ftable(tempImage(:, :, 3));
 	fTableCr(:, 1:2) = round(Ax * fTableCr(:, 1:2)')';
 	imageCr = fTable2image(fTableCr);
 
@@ -115,15 +115,15 @@ elseif attackType == 8
 	Ay = [1 0; para 1];
 
 	tempImage = rgb2ycbcr(originalImage);
-	fTableY = constructF(tempImage(:, :, 1));
+	fTableY = img2ftable(tempImage(:, :, 1));
 	fTableY(:, 1:2) = round(Ay * fTableY(:, 1:2)')';
 	imageY = fTable2image(fTableY);
 
-	fTableCb = constructF(tempImage(:, :, 2));
+	fTableCb = img2ftable(tempImage(:, :, 2));
 	fTableCb(:, 1:2) = round(Ay * fTableCb(:, 1:2)')';
 	imageCb = fTable2image(fTableCb);
 
-	fTableCr = constructF(tempImage(:, :, 3));
+	fTableCr = img2ftable(tempImage(:, :, 3));
 	fTableCr(:, 1:2) = round(Ay * fTableCr(:, 1:2)')';
 	imageCr = fTable2image(fTableCr);
 
@@ -150,15 +150,15 @@ elseif attackType == 9
 	Axy = Ax * Ay;
 
 	tempImage = rgb2ycbcr(originalImage);
-	fTableY = constructF(tempImage(:, :, 1));
+	fTableY = img2ftable(tempImage(:, :, 1));
 	fTableY(:, 1:2) = round(Axy * fTableY(:, 1:2)')';
 	imageY = fTable2image(fTableY);
 
-	fTableCb = constructF(tempImage(:, :, 2));
+	fTableCb = img2ftable(tempImage(:, :, 2));
 	fTableCb(:, 1:2) = round(Axy * fTableCb(:, 1:2)')';
 	imageCb = fTable2image(fTableCb);
 
-	fTableCr = constructF(tempImage(:, :, 3));
+	fTableCr = img2ftable(tempImage(:, :, 3));
 	fTableCr(:, 1:2) = round(Axy * fTableCr(:, 1:2)')';
 	imageCr = fTable2image(fTableCr);
 
@@ -187,15 +187,15 @@ elseif attackType == 10
 	disp('AbrMatrix==============end');
 
 	tempImage = rgb2ycbcr(originalImage);
-	fTableY = constructF(tempImage(:, :, 1));
+	fTableY = img2ftable(tempImage(:, :, 1));
 	fTableY(:, 1:2) = round(AbrMatrix * fTableY(:, 1:2)')';
 	imageY = fTable2image(fTableY);
 
-	fTableCb = constructF(tempImage(:, :, 2));
+	fTableCb = img2ftable(tempImage(:, :, 2));
 	fTableCb(:, 1:2) = round(AbrMatrix * fTableCb(:, 1:2)')';
 	imageCb = fTable2image(fTableCb);
 
-	fTableCr = constructF(tempImage(:, :, 3));
+	fTableCr = img2ftable(tempImage(:, :, 3));
 	fTableCr(:, 1:2) = round(AbrMatrix * fTableCr(:, 1:2)')';
 	imageCr = fTable2image(fTableCr);
 
