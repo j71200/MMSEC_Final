@@ -97,16 +97,17 @@ y_max = max(fTable3(:, 2));
 height = x_max - x_min + 1;
 width  = y_max - y_min + 1;
 
-mAlphaCT = normHeight / height;
-mAlphaLB = (normHeight - 0.5) / height;
-mAlphaUB = (normHeight + 0.5) / height;
+mAlpha = normHeight / height;
+idealAlphaLB = (normHeight - 1) / height;
+idealAlphaUB = (normHeight + 1) / height;
+extendAlphaLB = idealAlphaLB / 2;
+extendAlphaUB = idealAlphaUB * 2;
 
-mDeltaCT = normWidth / width;
-mDeltaLB = (normWidth - 0.5) / width;
-mDeltaUB = (normWidth + 0.5) / width;
-
-mAlpha = mAlphaCT;
-mDelta = mDeltaCT;
+mDelta = normWidth / width;
+idealDeltaLB = (normWidth - 1) / width;
+idealDeltaUB = (normWidth + 1) / width;
+extendDeltaLB = idealDeltaLB / 2;
+extendDeltaUB = idealDeltaUB * 2;
 
 
 x_min_scale = round(mAlpha * x_min);
@@ -121,26 +122,42 @@ scaleWidth  = y_max_scale - y_min_scale + 1;
 % disp(['mAlpha = ' num2str(mAlpha)]);
 % disp(['mDelta = ' num2str(mDelta)]);
 
-% counter = 0;
+counter = 0;
 while (scaleHeight ~= normHeight) || (scaleWidth ~= normWidth)
-	% counter  = counter + 1;
-	% if counter > 10
-	% 	break;
-	% end
+	counter = counter + 1;
+	if counter > 10
+		break;
+	end
 
 	% disp(['scaleHeight = ' num2str(scaleHeight)]);
 	% disp(['scaleWidth = ' num2str(scaleWidth)]);
 	% disp(['mAlpha = ' num2str(mAlpha)]);
 	% disp(['mDelta = ' num2str(mDelta)]);
 	if scaleHeight > normHeight
-		mAlpha = (mAlphaCT - mAlphaLB) * rand(1) + mAlphaLB;
+		extendAlphaUB = mAlpha;
+		mAlpha = (extendAlphaLB + extendAlphaUB) / 2;
+		% idealAlphaUB = mAlpha;
+		% mAlpha = (mAlpha - idealAlphaLB) * rand(1) + idealAlphaLB;
+		% mAlpha = (mAlphaCT - idealAlphaLB) * rand(1) + idealAlphaLB;
 	elseif scaleHeight < normHeight
-		mAlpha = (mAlphaUB - mAlphaCT) * rand(1) + mAlphaCT;
+		extendAlphaLB = mAlpha;
+		mAlpha = (extendAlphaLB + extendAlphaUB) / 2;
+		% idealAlphaLB = mAlpha;
+		% mAlpha = (idealAlphaUB - mAlpha) * rand(1) + mAlpha;
+		% mAlpha = (idealAlphaUB - mAlphaCT) * rand(1) + mAlphaCT;
 	end
 	if scaleWidth > normWidth
-		mDelta = (mDeltaCT - mDeltaLB) * rand(1) + mDeltaLB;
+		extendDeltaUB = mDelta;
+		mDelta = (extendDeltaLB + extendDeltaUB) / 2;
+		% idealDeltaUB = mDelta;
+		% mDelta = (mDelta - idealDeltaLB) * rand(1) + idealDeltaLB;
+		% mDelta = (mDeltaCT - idealDeltaLB) * rand(1) + idealDeltaLB;
 	elseif scaleWidth < normWidth
-		mDelta = (mDeltaUB - mDeltaCT) * rand(1) + mDeltaCT;
+		extendDeltaLB = mDelta;
+		mDelta = (extendDeltaLB + extendDeltaUB) / 2;
+		% idealDeltaLB = mDelta;
+		% mDelta = (idealDeltaUB - mDelta) * rand(1) + mDelta;
+		% mDelta = (idealDeltaUB - mDeltaCT) * rand(1) + mDeltaCT;
 	end
 	x_min_scale = round(mAlpha * x_min);
 	x_max_scale = round(mAlpha * x_max);
@@ -160,9 +177,9 @@ As = [mAlpha 0; 0 mDelta];
 fTable4 = fTable3;
 fTable4(:, 1:2) = (As * fTable4(:, 1:2)')';
 
-% mu_5_0 = centralMoment(fTable4, 5, 0);
-% mu_0_5 = centralMoment(fTable4, 0, 5);
-% [mu_5_0, mu_0_5]
+mu_5_0 = centralMoment(fTable4, 5, 0);
+mu_0_5 = centralMoment(fTable4, 0, 5);
+[mu_5_0, mu_0_5]
 
 % if (mu_5_0 > 0) && (mu_0_5 > 0)
 % 	isGood = true;

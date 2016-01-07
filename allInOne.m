@@ -63,12 +63,15 @@ wmSignature = maskImage .* wmSignature2_idct;
 % recoverImg = fTable2image(normFTable);
 % figure
 % imshow(recoverImg)
+
+
 wmSignFTable = img2ftable(wmSignature);
 wmSignFTable(:, 1:2) = (SYXMatrix^(-1) * wmSignFTable(:, 1:2)')';
 wmSignFTable(:, 1) = wmSignFTable(:, 1) + meanVector(1);
 wmSignFTable(:, 2) = wmSignFTable(:, 2) + meanVector(2);
 
 wmSignature_reg = fTable2image(wmSignFTable);
+size(wmSignature_reg)
 
 % Step 6
 % size(originalImage_dbl)
@@ -127,6 +130,11 @@ if isShowFig
 	imshow(normalAttImage)
 	title('normalAttImage')
 end
+
+dif = normalAttImage_dbl - normalOriginImage_dbl;
+psnr(normalAttImage, normalOriginImage)
+figure
+spy(dif)
 
 % ==========================
 % Extraction

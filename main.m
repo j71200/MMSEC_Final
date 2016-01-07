@@ -5,7 +5,8 @@ clc
 % originalImage = imread('./Experiment/airplane.bmp');
 % originalImage = imread('./Experiment/baboon.bmp');
 % originalImage = imread('./Experiment/fruits.bmp');
-originalImage = imread('./Experiment/peppers.bmp');
+% originalImage = imread('./Experiment/peppers.bmp');
+originalImage = imread('./Experiment/lena.bmp');
 
 
 %1 - Shift down without Crop
@@ -16,8 +17,16 @@ originalImage = imread('./Experiment/peppers.bmp');
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
 
-allInOne(originalImage, attackType, false);
+allInOne(originalImage, 1, true);
 
 % for attackType = 1:7
-% 	allInOne(originalImage, attackType, false);
+% 	allInOne(originalImage, attackType, true);
 % end
+
+
+
+
+
+
+
+
