@@ -2,44 +2,92 @@ close all
 clear('all');
 clc
 
-originalImage = imread('./Experiment/airplane.bmp');
-originalImage = rgb2gray(originalImage);
-aa = dct2(originalImage);
-aa(1,1)
-
-originalImage = imread('./Experiment/baboon.bmp');
-originalImage = rgb2gray(originalImage);
-aa = dct2(originalImage);
-aa(1,1)
-
-originalImage = imread('./Experiment/fruits.bmp');
-originalImage = rgb2gray(originalImage);
-aa = dct2(originalImage);
-aa(1,1)
-
-originalImage = imread('./Experiment/peppers.bmp');
-originalImage = rgb2gray(originalImage);
-aa = dct2(originalImage);
-aa(1,1)
-
-originalImage = imread('./Experiment/lena.bmp');
-originalImage = rgb2gray(originalImage);
-aa = dct2(originalImage);
-aa(1,1)
+addpath('./RSA')
 
 
-% H = 57.2109513313366;
-% L = -61.6712173299277;
-% x = linspace(4.2, 4.4, 1000);
-% y = round(x*H) - round(x*L);
-% plot(x,y)
+% The value of (N) is: 72899
+% The public key (e) is: 7
+% The value of (Phi) is: 72360
+% The private key (d)is: 62023
+
+
+% M = randi([0, 255], 5)
+
+% N = 72899;
+% e = 7;
+
+% e = dec2bin(e);
+% k = 65535;
+% c  = M;
+% cf = zeros(size(M)) + 1;
+% cf = mod(c .* cf, N);
+% for i = k-1:-1:1
+%     c = mod(c .* c, N);
+%     j = k - i + 1;
+%      if e(j)==1
+%          cf = mod(c .* cf, N);
+%      end
+% end
+
+% cf
+
+
+% e = dec2bin(62023);
+% k = 65535;
+% c  = cf;
+% cf = zeros(size(M)) + 1;
+% cf = mod(c .* cf, N);
+% for i = k-1:-1:1
+%     c = mod(c .* c, N);
+%     j = k - i + 1;
+%      if e(j)==1
+%          cf = mod(c .* cf, N);
+%      end
+% end
+
+% cf
 
 
 
-% originalImage = imread('./Experiment/lena.png');
-% imwrite(originalImage, './Experiment/lena.bmp')
 
+% p = 991;
+% q = 997;
+
+p = 269;
+q = 271;
+
+[N_pk, Phi, d_sk, e_pk] = intialize(p,q);
+
+im = imread('./Experiment/lena.bmp');
+im = rgb2gray(im);
+im_dbl = double(im);
+
+% im_dbl = randi([0, 255], 5);
 % figure
-% title('My title')
+% image(im_dbl)
+
+startEncTime = clock;
+disp(['Start encode:' num2str(startEncTime(2)) '-' num2str(startEncTime(3)) ' ' num2str(startEncTime(4)) ':' num2str(startEncTime(5)) ]);
+encIm_dbl = cryptImage(im_dbl, N_pk, e_pk);
+% figure
+% image(encIm_dbl)
+endEncTime = clock;
+disp(['End encode:' num2str(endEncTime(2)) '-' num2str(endEncTime(3)) ' ' num2str(endEncTime(4)) ':' num2str(endEncTime(5)) ]);
+
+startDecTime = clock;
+disp(['Start encode:' num2str(startDecTime(2)) '-' num2str(startDecTime(3)) ' ' num2str(startDecTime(4)) ':' num2str(startDecTime(5)) ]);
+decIm_dbl = cryptImage(encIm_dbl, N_pk, d_sk);
+% figure
+% image(decIm_dbl)
+endDecTime = clock;
+disp(['Start encode:' num2str(endDecTime(2)) '-' num2str(endDecTime(3)) ' ' num2str(endDecTime(4)) ':' num2str(endDecTime(5)) ]);
+
+% im = uint8(im_dbl);
+% encIm = uint8(encIm_dbl)
+
+% tic
+% decIm_dbl = cryptImage(encIm_dbl, N_pk, d_sk);
+% toc
+
 
 

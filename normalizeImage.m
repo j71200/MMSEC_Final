@@ -122,12 +122,12 @@ scaleWidth  = y_max_scale - y_min_scale + 1;
 % disp(['mAlpha = ' num2str(mAlpha)]);
 % disp(['mDelta = ' num2str(mDelta)]);
 
-counter = 0;
+% counter = 0;
 while (scaleHeight ~= normHeight) || (scaleWidth ~= normWidth)
-	counter = counter + 1;
-	if counter > 10
-		break;
-	end
+	% counter = counter + 1;
+	% if counter > 10
+	% 	break;
+	% end
 
 	% disp(['scaleHeight = ' num2str(scaleHeight)]);
 	% disp(['scaleWidth = ' num2str(scaleWidth)]);
@@ -179,7 +179,7 @@ fTable4(:, 1:2) = (As * fTable4(:, 1:2)')';
 
 mu_5_0 = centralMoment(fTable4, 5, 0);
 mu_0_5 = centralMoment(fTable4, 0, 5);
-[mu_5_0, mu_0_5]
+% [mu_5_0, mu_0_5]
 
 % if (mu_5_0 > 0) && (mu_0_5 > 0)
 % 	isGood = true;
