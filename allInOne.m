@@ -38,6 +38,7 @@ load('data_wm256_pt256x256');
 % patterns = sign(randn(patternSize, wmSize));
 
 % Step 2-(b)
+% s = x + (alpha*b - lambda*(x'*pattern)/(pattern'*pattern))*pattern;
 wmSignature1 = patterns * (2*watermark - 1);
 % s = x + (alpha*b - lambda*(x'*pattern)/(pattern'*pattern))*pattern;
 
