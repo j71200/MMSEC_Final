@@ -1,16 +1,16 @@
-function [] = allInOne(originalImage, attackType, isShowFig)
+function [wmSignature, wmSignature_reg] = allInOne(originalImage_dbl, attackType, isShowFig)
 
 % originalImage = imread('./Experiment/airplane.bmp');
 % originalImage = imread('./Experiment/baboon.bmp');
 % originalImage = imread('./Experiment/fruits.bmp');
 % originalImage = imread('./Experiment/airplane.bmp');
 
-originalImage = rgb2gray(originalImage);
+
 % originalImage = imread('./Experiment/peppers_gray.bmp');
 % figure
 % imshow(originalImage)
 % title('originalImage')
-originalImage_dbl = double(originalImage);
+
 
 % ==========================
 % Normalization I - Original
@@ -73,13 +73,14 @@ wmSignFTable(:, 1) = wmSignFTable(:, 1) + meanVector(1);
 wmSignFTable(:, 2) = wmSignFTable(:, 2) + meanVector(2);
 
 wmSignature_reg = fTable2image(wmSignFTable);
-size(wmSignature_reg)
+% size(wmSignature_reg)
 
 % Step 6
-% size(originalImage_dbl)
-% size(wmSignature_reg)
-wmSignature_reg = double(wmSignature_reg);
-wmImage = originalImage_dbl + wmSignature_reg(2:end-1, 2:end-1);
+wmSignature_reg = double(wmSignature_reg); %wmSignature_reg means regular wmSignature
+
+% sizeOFwmSignature_reg = size(wmSignature_reg)
+% wmImage = originalImage_dbl + wmSignature_reg(2:end-1, 2:end-1);
+wmImage = originalImage_dbl + wmSignature_reg(2:513, 2:513);
 wmImage = uint8(wmImage);
 
 if isShowFig
@@ -98,7 +99,6 @@ end
 %5 - Shearing in x without Crop
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
-%8 - Arbitrary matrix without Crop
 paraList = zeros(8, 1);
 paraList(1) = 200;
 paraList(2) = 200;
@@ -107,7 +107,15 @@ paraList(4) = 1.5;
 paraList(5) = 1;
 paraList(6) = 1;
 paraList(7) = 1;
-paraList(8) = 2;
+
+% paraList(1) = 10;
+% paraList(2) = 10;
+% paraList(3) = 1;
+% paraList(4) = 1.1;
+% paraList(5) = 0.5;
+% paraList(6) = 0.5;
+% paraList(7) = 0.5;
+
 attWMImage = attackGray(wmImage, attackType, paraList(attackType));
 
 if isShowFig
@@ -133,10 +141,13 @@ if isShowFig
 	title('normalAttImage')
 end
 
-dif = normalAttImage_dbl - normalOriginImage_dbl;
-psnr(normalAttImage, normalOriginImage)
-figure
-spy(dif)
+
+% psnr(normalAttImage, normalOriginImage)
+if isShowFig
+	dif = normalAttImage_dbl - normalOriginImage_dbl;
+	figure
+	spy(dif)
+end
 
 % ==========================
 % Extraction

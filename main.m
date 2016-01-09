@@ -2,11 +2,17 @@ close all
 clear
 clc
 
-% originalImage = imread('./Experiment/airplane.bmp');
+originalImage = imread('./Experiment/airplane.bmp');
 % originalImage = imread('./Experiment/baboon.bmp');
 % originalImage = imread('./Experiment/fruits.bmp');
 % originalImage = imread('./Experiment/peppers.bmp');
-originalImage = imread('./Experiment/lena.bmp');
+% originalImage = imread('./Experiment/lena.bmp');
+
+originalImage = rgb2gray(originalImage);
+originalImage_dbl = double(originalImage);
+
+% load('ImportData.mat')
+% originalImage_dbl = encIm_dbl;
 
 
 %1 - Shift down without Crop
@@ -17,10 +23,10 @@ originalImage = imread('./Experiment/lena.bmp');
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
 
-allInOne(originalImage, 1, true);
+[aa, bb] = allInOne(originalImage_dbl, 1, false);
 
 % for attackType = 1:7
-% 	allInOne(originalImage, attackType, true);
+% 	allInOne(originalImage_dbl, attackType, 0);
 % end
 
 

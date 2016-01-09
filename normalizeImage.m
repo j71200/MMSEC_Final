@@ -1,9 +1,9 @@
-function [ normalizedImg, normFTable, SYXMatrix, meanVector ] = normalizeImage( inputImage, normHeight, normWidth, showProcessFlag)
+function [ normalizedImg, normFTable, SYXMatrix, meanVector ] = normalizeImage( inputImage_dbl, normHeight, normWidth, showProcessFlag)
 %NORMALIZEIMAGE Summary of this function goes here
 %   Detailed explanation goes here
 
 
-fTable = img2ftable( inputImage );
+fTable = img2ftable( inputImage_dbl );
 if showProcessFlag
 	disp('fTable(1:10,:)')
 	disp(fTable(1:10,:))
