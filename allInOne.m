@@ -39,6 +39,7 @@ load('data_wm256_pt256x256');
 
 % Step 2-(b)
 wmSignature1 = patterns * (2*watermark - 1);
+% s = x + (alpha*b - lambda*(x'*pattern)/(pattern'*pattern))*pattern;
 
 % Step 2-(c)
 [zigzagColMajor ~] = genaralZigzag(normHeight, normWidth);

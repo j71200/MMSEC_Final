@@ -74,13 +74,16 @@ encIm_dbl = cryptImage(im_dbl, N_pk, e_pk);
 endEncTime = clock;
 disp(['End encode:' num2str(endEncTime(2)) '-' num2str(endEncTime(3)) ' ' num2str(endEncTime(4)) ':' num2str(endEncTime(5)) ]);
 
+
+
+
 startDecTime = clock;
-disp(['Start encode:' num2str(startDecTime(2)) '-' num2str(startDecTime(3)) ' ' num2str(startDecTime(4)) ':' num2str(startDecTime(5)) ]);
+disp(['Start decode:' num2str(startDecTime(2)) '-' num2str(startDecTime(3)) ' ' num2str(startDecTime(4)) ':' num2str(startDecTime(5)) ]);
 decIm_dbl = cryptImage(encIm_dbl, N_pk, d_sk);
 % figure
 % image(decIm_dbl)
 endDecTime = clock;
-disp(['Start encode:' num2str(endDecTime(2)) '-' num2str(endDecTime(3)) ' ' num2str(endDecTime(4)) ':' num2str(endDecTime(5)) ]);
+disp(['End decode:' num2str(endDecTime(2)) '-' num2str(endDecTime(3)) ' ' num2str(endDecTime(4)) ':' num2str(endDecTime(5)) ]);
 
 % im = uint8(im_dbl);
 % encIm = uint8(encIm_dbl)
