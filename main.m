@@ -11,9 +11,6 @@ originalImage = imread('./Experiment/airplane.bmp');
 originalImage = rgb2gray(originalImage);
 originalImage_dbl = double(originalImage);
 
-% load('ImportData.mat')
-% originalImage_dbl = encIm_dbl;
-
 
 %1 - Shift down without Crop
 %2 - Shift right without Crop
@@ -23,7 +20,7 @@ originalImage_dbl = double(originalImage);
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
 
-[aa, bb] = allInOne(originalImage_dbl, 1, false);
+allInOne(originalImage_dbl, 3, false);
 
 % for attackType = 1:7
 % 	allInOne(originalImage_dbl, attackType, 0);

@@ -55,32 +55,36 @@ wmSignature2_idct = idct2(wmSignature2);
 % Step 3
 maskImage = normalOriginImage > 0;
 
+nnz(normalOriginImage)
+
+nnzOForiginalImage_dbl =  nnz(originalImage_dbl);
+nnzOForiginalImage_dbl
+
+nnz_normFTable = nnz(normFTable(:, 3));
+nnz_normFTable
+
 % Step 4
 wmSignature = maskImage .* wmSignature2_idct;
 
 % Step 5
-% normFTable(:, 1:2) = (SYXMatrix^(-1) * normFTable(:, 1:2)')';
-% normFTable(:, 1) = normFTable(:, 1) + meanVector(1);
-% normFTable(:, 2) = normFTable(:, 2) + meanVector(2);
-% recoverImg = fTable2image(normFTable);
-% figure
-% imshow(recoverImg)
-
-
 wmSignFTable = img2ftable(wmSignature);
 wmSignFTable(:, 1:2) = (SYXMatrix^(-1) * wmSignFTable(:, 1:2)')';
 wmSignFTable(:, 1) = wmSignFTable(:, 1) + meanVector(1);
 wmSignFTable(:, 2) = wmSignFTable(:, 2) + meanVector(2);
 
 wmSignature_reg = fTable2image(wmSignFTable);
-% size(wmSignature_reg)
+size(wmSignature_reg)
+nnz(wmSignature_reg(1,:))
+nnz(wmSignature_reg(end,:))
+nnz(wmSignature_reg(:,1))
+nnz(wmSignature_reg(:,end))
 
 % Step 6
 wmSignature_reg = double(wmSignature_reg); %wmSignature_reg means regular wmSignature
 
 % sizeOFwmSignature_reg = size(wmSignature_reg)
 % wmImage = originalImage_dbl + wmSignature_reg(2:end-1, 2:end-1);
-wmImage = originalImage_dbl + wmSignature_reg(2:513, 2:513);
+wmImage = originalImage_dbl + wmSignature_reg(1:512, 2:513);
 wmImage = uint8(wmImage);
 
 if isShowFig

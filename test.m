@@ -11,34 +11,43 @@ imshow(uint8(originalImage_dbl))
 origTable = img2ftable(originalImage_dbl);
 nnz(origTable(:,3))
 
-[ normalizedImg, normFTable, Ax, Ay, As, meanVector ] = normalizeImage( originalImage_dbl, 512, 512, false);
+[ normalizedImg, normFTable, SYXMatrix, meanVector ] = normalizeImage( originalImage_dbl, 512, 512, false);
 figure
 imshow(uint8(normalizedImg))
+nnz(normFTable(:,3))
 
 
-newTable = img2ftable(normalizedImg);
-newTable(:, 1:2) = ((As*Ay*Ax)^(-1) * newTable(:, 1:2)')';
+normFTable(:, 3) = normFTable(:, 3) + 50;
+
+
+
+
+% newTable = img2ftable(normalizedImg);
+newTable = normFTable;
+newTable(:, 1:2) = (SYXMatrix^(-1) * newTable(:, 1:2)')';
 newTable(:, 1) = newTable(:, 1) + meanVector(1);
 newTable(:, 2) = newTable(:, 2) + meanVector(2);
 
-regImg = fTable2image(newTable);
+regImg_dbl = fTable2image(newTable);
 figure
-imshow(uint8(regImg))
+imshow(uint8(regImg_dbl))
 nnz(newTable(:,3))
 
 
-dif = regImg - originalImage_dbl;
-figure
-imshow(uint8(dif))
+psnr(uint8(regImg_dbl), uint8(originalImage_dbl))
+
+% dif = regImg_dbl - originalImage_dbl;
+% figure
+% imshow(uint8(dif))
 
 
 % newTable(:, 1:2) = (SYXMatrix^(-1) * normFTable(:, 1:2)')';
 % newTable(:, 1) = newTable(:, 1) + meanVector(1);
 % newTable(:, 2) = newTable(:, 2) + meanVector(2);
 
-% regImg = fTable2image(newTable);
+% regImg_dbl = fTable2image(newTable);
 % figure
-% imshow(uint8(regImg))
+% imshow(uint8(regImg_dbl))
 
 % addpath('./RSA')
 % p = 991;
