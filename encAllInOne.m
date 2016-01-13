@@ -1,41 +1,42 @@
-function [wmSignature, wmSignature_reg] = allInOne(originalImage_dbl, attackType, isShowFig)
-
-% originalImage = imread('./Experiment/airplane.bmp');
-% originalImage = imread('./Experiment/baboon.bmp');
-% originalImage = imread('./Experiment/fruits.bmp');
-% originalImage = imread('./Experiment/airplane.bmp');
+function [wmSignature, wmSignature_reg] = encAllInOne(originalImage_dbl, attackType, isShowFig)
 
 
-% originalImage = imread('./Experiment/peppers_gray.bmp');
+% ==========================
+% Encryption
+% ==========================
+randMatrixMult = 1 * rand(size(originalImage_dbl));
+randMatrixAdd = 1000 * rand(size(originalImage_dbl));
+originalImage_enc = randMatrixMult .* originalImage_dbl + randMatrixAdd;
+
 % figure
-% imshow(originalImage)
-% title('originalImage')
+% image(originalImage_enc)
+% figure
+% imshow(uint8((originalImage_enc - randMatrixAdd) ./ randMatrixMult))
 
+
+% ====================================================
+%                  Embedding Watermark
+% ====================================================
 
 % ==========================
 % Normalization I - Original
 % ==========================
 normHeight = 512;
 normWidth  = 512;
-[normalOriginImage_dbl, normFTable, SYXMatrix, meanVector] = normalizeImage(originalImage_dbl, normHeight, normWidth, false);
-normalOriginImage = uint8(normalOriginImage_dbl);
-if isShowFig
-	figure
-	imshow(normalOriginImage)
-	title('normalOriginImage')
-end
+[normalOriginImage_enc, normFTable, SYXMatrix, meanVector] = normalizeImage(originalImage_enc, normHeight, normWidth, false);
+% normalOriginImage = uint8(normalOriginImage_enc);
+% if isShowFig
+% 	figure
+% 	imshow(normalOriginImage)
+% 	title('normalOriginImage')
+% end
 
 % ==========================
 % Embedding Watermark
 % ==========================
-[normalHeight normalWidth] = size(normalOriginImage);
 
 % Step 2-(a)
 load('data_wm256_pt256x256');
-% wmSize = 256; % 8KB
-% watermark = randi([0, 1], wmSize, 1);
-% patternSize = normHeight * normWidth;
-% patterns = sign(randn(patternSize, wmSize));
 
 % Step 2-(b)
 % s = x + (alpha*b - lambda*(x'*pattern)/(pattern'*pattern))*pattern;
@@ -53,7 +54,7 @@ wmSignature2(middle_band_idx) = wmSignature1;
 wmSignature2_idct = idct2(wmSignature2);
 
 % Step 3
-maskImage = normalOriginImage > 0;
+maskImage = normalOriginImage_enc > 0;
 
 % nnz(normalOriginImage)
 
@@ -121,20 +122,35 @@ end
 endRow = startRow + normHeight - 1;
 endCol = startCol + normWidth - 1;
 
-wmImage = originalImage_dbl + wmSignature_reg(startRow:endRow, startCol:endCol);
+
+wmSignature_enc = randMatrix * wmSignature_reg(startRow:endRow, startCol:endCol);
+wmImage_enc = originalImage_enc + wmSignature_enc;
 % wmImage = originalImage_dbl + wmSignature_reg(1:512, 2:513);
 
-wmImage = uint8(wmImage);
+% wmImage = uint8(wmImage);
 
 % imwrite(uint8(originalImage_dbl), './Experiment/wm/XXXX_gray.png');
 % mPSNR = round(psnr(wmImage, uint8(originalImage_dbl)) * 10) / 10;
 % imwrite(wmImage, ['./Experiment/wm/XXXX_wm_' num2str(mPSNR) '.png']);
 
-if isShowFig
-	figure
-	imshow(wmImage)
-	title('wmImage')
-end
+% if isShowFig
+% 	figure
+% 	imshow(wmImage)
+% 	title('wmImage')
+% end
+
+
+% ====================================================
+%                  Attacking Watermark
+% ====================================================
+
+% ==========================
+% Decryption
+% ==========================
+wmImage_dbl = inv(randMatrix) * wmImage_enc;
+% figure
+% imshow(uint8(wmImage_dec))
+
 % ==========================
 % Attack
 % ==========================
@@ -163,7 +179,7 @@ paraList(7) = 1;
 % paraList(6) = 0.5;
 % paraList(7) = 0.5;
 
-attWMImage = attackGray(wmImage, attackType, paraList(attackType));
+% attWMImage = attackGray(wmImage, attackType, paraList(attackType));
 
 if isShowFig
 	figure
@@ -172,15 +188,28 @@ if isShowFig
 end
 
 % To be deleted
-% attWMImage = wmImage;
+attWMImage_dbl = wmImage_dbl;
+
+
+% ====================================================
+%                  Extraction Watermark
+% ====================================================
+
+% ==========================
+% Encryption
+% ==========================
+% figure
+% imshow(uint8(attWMImage_dbl))
+attWMImage_enc = randMatrix * attWMImage_dbl;
+
 
 % ==========================
 % Normalization II - Attack
 % ==========================
-attWMImage_dbl = double(attWMImage);
-[normalAttImage_dbl, normAttFTable, attSYXMatrix, attMeanVector] = normalizeImage(attWMImage_dbl, normHeight, normWidth, false);
+% attWMImage_dbl = double(attWMImage);
+[normalAttImage_enc, normAttFTable, attSYXMatrix, attMeanVector] = normalizeImage(attWMImage_enc, normHeight, normWidth, false);
 
-normalAttImage = uint8(normalAttImage_dbl);
+% normalAttImage = uint8(normalAttImage_dbl);
 
 if isShowFig
 	figure
@@ -191,32 +220,62 @@ end
 
 % psnr(normalAttImage, normalOriginImage)
 if isShowFig
-	dif = normalAttImage_dbl - normalOriginImage_dbl;
+	dif = normalAttImage_dbl - normalOriginImage_enc;
 	figure
 	spy(dif)
 end
 
 % ==========================
-% Extraction
+% Decryption
 % ==========================
-% Step 2-(a)
-% Regenerate the watermark patterns - DONE
+% normalAttImage_dbl = inv(randMatrix) * double(normalAttImage_enc);
 
-% Step 2-(b)
-normalAttImage_dct = dct2(normalAttImage);
+normAttImage_enc_ftable = img2ftable(normalAttImage_enc);
+normAttImage_enc_ftable(:, 1:2) = (SYXMatrix^(-1) * normAttImage_enc_ftable(:, 1:2)')';
+normAttImage_enc_ftable(:, 1) = normAttImage_enc_ftable(:, 1) + meanVector(1);
+normAttImage_enc_ftable(:, 2) = normAttImage_enc_ftable(:, 2) + meanVector(2);
 
-% Step 2-(c)
-% middle_band_idx = zigzagColMajor(1+3*imageArea/8:3*imageArea/8 + patternSize);
-% wmSignature2(middle_band_idx) = wmSignature1;
-cw = normalAttImage_dct(middle_band_idx);
+regularAttImage_enc = fTable2image(normAttImage_enc_ftable);
 
-% Step 2-(d)
-extractedWM = patterns' * cw;
-extractedWM = extractedWM > 0;
 
-wmDiff = extractedWM - watermark;
-% [watermark extractedWM]
-bitErrorRate = 100 * nnz(wmDiff) / length(watermark)
+
+
+% recoveredAttImage_enc = inv(SYXMatrix) * double(normalAttImage_enc);
+
+whos regularAttImage_enc
+nnz(regularAttImage_enc(1,:))
+nnz(regularAttImage_enc(end,:))
+nnz(regularAttImage_enc(:,1))
+nnz(regularAttImage_enc(:,end))
+
+regularAttImage_dbl = inv(randMatrix) * double(regularAttImage_enc(1:normHeight, 2:normWidth+1));
+
+figure
+imshow(uint8(regularAttImage_dbl))
+
+
+
+% % ==========================
+% % Extraction
+% % ==========================
+% % Step 2-(a)
+% % Regenerate the watermark patterns - DONE
+
+% % Step 2-(b)
+% normalAttImage_dct = dct2(normalAttImage);
+
+% % Step 2-(c)
+% % middle_band_idx = zigzagColMajor(1+3*imageArea/8:3*imageArea/8 + patternSize);
+% % wmSignature2(middle_band_idx) = wmSignature1;
+% cw = normalAttImage_dct(middle_band_idx);
+
+% % Step 2-(d)
+% extractedWM = patterns' * cw;
+% extractedWM = extractedWM > 0;
+
+% wmDiff = extractedWM - watermark;
+% % [watermark extractedWM]
+% bitErrorRate = 100 * nnz(wmDiff) / length(watermark)
 
 
 

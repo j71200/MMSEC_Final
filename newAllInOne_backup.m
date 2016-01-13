@@ -1,4 +1,4 @@
-function [wmSignature, wmSignature_reg] = allInOne(originalImage_dbl, attackType, isShowFig)
+function [wmSignature, wmSignature_reg] = newAllInOne(originalImage_dbl, attackType, isShowFig)
 
 % originalImage = imread('./Experiment/airplane.bmp');
 % originalImage = imread('./Experiment/baboon.bmp');
@@ -17,18 +17,18 @@ function [wmSignature, wmSignature_reg] = allInOne(originalImage_dbl, attackType
 % ==========================
 normHeight = 512;
 normWidth  = 512;
-[normalOriginImage_dbl, normFTable, SYXMatrix, meanVector] = normalizeImage(originalImage_dbl, normHeight, normWidth, false);
-normalOriginImage = uint8(normalOriginImage_dbl);
-if isShowFig
-	figure
-	imshow(normalOriginImage)
-	title('normalOriginImage')
-end
+% [normalOriginImage_dbl, normFTable, SYXMatrix, meanVector] = normalizeImage(originalImage_dbl, normHeight, normWidth, false);
+% normalOriginImage = uint8(normalOriginImage_dbl);
+% if isShowFig
+% 	figure
+% 	imshow(normalOriginImage)
+% 	title('normalOriginImage')
+% end
 
 % ==========================
 % Embedding Watermark
 % ==========================
-[normalHeight normalWidth] = size(normalOriginImage);
+% [normalHeight normalWidth] = size(normalOriginImage);
 
 % Step 2-(a)
 load('data_wm256_pt256x256');
@@ -53,7 +53,7 @@ wmSignature2(middle_band_idx) = wmSignature1;
 wmSignature2_idct = idct2(wmSignature2);
 
 % Step 3
-maskImage = normalOriginImage > 0;
+% maskImage = normalOriginImage > 0;
 
 % nnz(normalOriginImage)
 
@@ -64,15 +64,15 @@ maskImage = normalOriginImage > 0;
 % nnz_normFTable
 
 % Step 4
-wmSignature = maskImage .* wmSignature2_idct;
+% wmSignature = maskImage .* wmSignature2_idct;
 
 % Step 5
-wmSignFTable = img2ftable(wmSignature);
-wmSignFTable(:, 1:2) = (SYXMatrix^(-1) * wmSignFTable(:, 1:2)')';
-wmSignFTable(:, 1) = wmSignFTable(:, 1) + meanVector(1);
-wmSignFTable(:, 2) = wmSignFTable(:, 2) + meanVector(2);
+% wmSignFTable = img2ftable(wmSignature);
+% wmSignFTable(:, 1:2) = (SYXMatrix^(-1) * wmSignFTable(:, 1:2)')';
+% wmSignFTable(:, 1) = wmSignFTable(:, 1) + meanVector(1);
+% wmSignFTable(:, 2) = wmSignFTable(:, 2) + meanVector(2);
 
-wmSignature_reg = fTable2image(wmSignFTable);
+% wmSignature_reg = fTable2image(wmSignFTable);
 % size(wmSignature_reg)
 % nnz(wmSignature_reg(1,:))
 % nnz(wmSignature_reg(end,:))
@@ -80,61 +80,95 @@ wmSignature_reg = fTable2image(wmSignFTable);
 % nnz(wmSignature_reg(:,end))
 
 % Step 6
-wmSignature_reg = double(wmSignature_reg); %wmSignature_reg means regular wmSignature
+% wmSignature_reg = double(wmSignature_reg); %wmSignature_reg means regular wmSignature
 
 % wmImage = originalImage_dbl + wmSignature_reg(2:end-1, 2:end-1);
 
-roundCauseHeight = size(wmSignature_reg, 1) - normHeight;
-roundCauseWidth = size(wmSignature_reg, 2) - normWidth;
-if roundCauseHeight == 1
-	firstRowNNZ = nnz(wmSignature_reg(1, :));
-	LastRowNNZ = nnz(wmSignature_reg(end, :));
-	if firstRowNNZ <= LastRowNNZ
-		startRow = 2;
-	else
-		startRow = 1;
-	end
-elseif roundCauseHeight == 2
-	startRow = 2;
-elseif roundCauseHeight == 0
-	% Do nothing
-else
-	disp('roundCauseHeight exception!');
-end
+% roundCauseHeight = size(wmSignature_reg, 1) - normHeight;
+% roundCauseWidth = size(wmSignature_reg, 2) - normWidth;
+% if roundCauseHeight == 1
+% 	firstRowNNZ = nnz(wmSignature_reg(1, :));
+% 	LastRowNNZ = nnz(wmSignature_reg(end, :));
+% 	if firstRowNNZ <= LastRowNNZ
+% 		startRow = 2;
+% 	else
+% 		startRow = 1;
+% 	end
+% elseif roundCauseHeight == 2
+% 	startRow = 2;
+% elseif roundCauseHeight == 0
+% 	% Do nothing
+% else
+% 	disp('roundCauseHeight exception!');
+% end
 
-if roundCauseWidth == 1
-	firstColNNZ = nnz(wmSignature_reg(:, 1));
-	LastColNNZ = nnz(wmSignature_reg(:, end));
-	if firstColNNZ <= LastColNNZ
-		startCol = 2;
-	else
-		startCol = 1;
-	end
-elseif roundCauseWidth == 2
-	startCol = 2;
-elseif roundCauseWidth == 0
-	% Do nothing
-else
-	disp('roundCauseWidth exception!');
-end
+% if roundCauseWidth == 1
+% 	firstColNNZ = nnz(wmSignature_reg(:, 1));
+% 	LastColNNZ = nnz(wmSignature_reg(:, end));
+% 	if firstColNNZ <= LastColNNZ
+% 		startCol = 2;
+% 	else
+% 		startCol = 1;
+% 	end
+% elseif roundCauseWidth == 2
+% 	startCol = 2;
+% elseif roundCauseWidth == 0
+% 	% Do nothing
+% else
+% 	disp('roundCauseWidth exception!');
+% end
 
-endRow = startRow + normHeight - 1;
-endCol = startCol + normWidth - 1;
+% endRow = startRow + normHeight - 1;
+% endCol = startCol + normWidth - 1;
 
-wmImage = originalImage_dbl + wmSignature_reg(startRow:endRow, startCol:endCol);
+% wmImage = originalImage_dbl + wmSignature_reg(startRow:endRow, startCol:endCol);
 % wmImage = originalImage_dbl + wmSignature_reg(1:512, 2:513);
 
-wmImage = uint8(wmImage);
+wmImage_dbl = originalImage_dbl + wmSignature2_idct;
+wmImage = uint8(wmImage_dbl);
+
+if isShowFig
+	figure('name','wmImage');
+	imshow(wmImage)
+end
 
 % imwrite(uint8(originalImage_dbl), './Experiment/wm/XXXX_gray.png');
 % mPSNR = round(psnr(wmImage, uint8(originalImage_dbl)) * 10) / 10;
 % imwrite(wmImage, ['./Experiment/wm/XXXX_wm_' num2str(mPSNR) '.png']);
 
+
+
+[normalWmImage_dbl, normFTable, SYXMatrix, meanVector] = normalizeImage(wmImage_dbl, normHeight, normWidth, false);
+
+normalWmImage = uint8(normalWmImage_dbl);
 if isShowFig
-	figure
-	imshow(wmImage)
-	title('wmImage')
+	figure('name','normalWmImage');
+	imshow(normalWmImage)
 end
+
+
+
+
+
+
+
+
+% wmImage_dct = dct2(wmImage_dbl);
+% cw = wmImage_dct(middle_band_idx);
+
+% extractedWM = patterns' * cw;
+% extractedWM = extractedWM > 0;
+
+% wmDiff = extractedWM - watermark;
+% % [watermark extractedWM]
+% bitErrorRate = 100 * nnz(wmDiff) / length(watermark)
+
+
+
+% sfdji = sfjoiaf;
+
+
+
 % ==========================
 % Attack
 % ==========================
@@ -166,9 +200,8 @@ paraList(7) = 1;
 attWMImage = attackGray(wmImage, attackType, paraList(attackType));
 
 if isShowFig
-	figure
+	figure('name','attWMImage');
 	imshow(attWMImage)
-	title('attWMImage')
 end
 
 % To be deleted
@@ -183,18 +216,36 @@ attWMImage_dbl = double(attWMImage);
 normalAttImage = uint8(normalAttImage_dbl);
 
 if isShowFig
-	figure
+	figure('name','normalAttImage');
 	imshow(normalAttImage)
-	title('normalAttImage')
 end
+
+
+
+
+recFTable = normAttFTable;
+recFTable(:, 1:2) = (SYXMatrix^(-1) * recFTable(:, 1:2)')';
+recFTable(:, 1) = recFTable(:, 1) + meanVector(1);
+recFTable(:, 2) = recFTable(:, 2) + meanVector(2);
+
+recImage_dbl = fTable2image(recFTable);
+recImage = uint8(recImage_dbl);
+
+if isShowFig
+	figure('name','recImage');
+	imshow(recImage)
+end
+
+
+
 
 
 % psnr(normalAttImage, normalOriginImage)
-if isShowFig
-	dif = normalAttImage_dbl - normalOriginImage_dbl;
-	figure
-	spy(dif)
-end
+% if isShowFig
+% 	dif = normalAttImage_dbl - normalOriginImage_dbl;
+% 	figure
+% 	spy(dif)
+% end
 
 % ==========================
 % Extraction
@@ -203,23 +254,22 @@ end
 % Regenerate the watermark patterns - DONE
 
 % Step 2-(b)
-normalAttImage_dct = dct2(normalAttImage);
+recImage_dct = dct2(recImage);
 
 % Step 2-(c)
 % middle_band_idx = zigzagColMajor(1+3*imageArea/8:3*imageArea/8 + patternSize);
 % wmSignature2(middle_band_idx) = wmSignature1;
-cw = normalAttImage_dct(middle_band_idx);
+cw = recImage_dct(middle_band_idx);
 
 % Step 2-(d)
 extractedWM = patterns' * cw;
 extractedWM = extractedWM > 0;
 
 wmDiff = extractedWM - watermark;
-% [watermark extractedWM]
 bitErrorRate = 100 * nnz(wmDiff) / length(watermark)
 
 
-
+% psnr(recImage, wmImage)
 
 end
 
