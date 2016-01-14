@@ -1,4 +1,4 @@
-function [ normalizedImg, normFTable, SYXMatrix, meanVector ] = normalizeImage( inputImage_dbl, normHeight, normWidth, showProcessFlag)
+function [ normalizedImg_dbl, normFTable, SYXMatrix, meanVector ] = normalizeImage( inputImage_dbl, normHeight, normWidth, showProcessFlag)
 %NORMALIZEIMAGE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -23,12 +23,12 @@ fTable1 = fTable;
 fTable1(:, 1) = fTable1(:, 1) - x_mean;
 fTable1(:, 2) = fTable1(:, 2) - y_mean;
 
-im1 = fTable2image(fTable1);
+im1_dbl = fTable2image(fTable1);
 if showProcessFlag
 	disp('fTable1(1:10,:)')
 	disp(fTable1(1:10,:))
 	figure;
-	imshow(im1);
+	imshow(uint8(im1_dbl));
 end
 
 
@@ -51,14 +51,14 @@ Ax = [1 mBeta; 0 1];
 fTable2 = fTable1;
 fTable2(:, 1:2) = (Ax * fTable2(:, 1:2)')';
 
-im2 = fTable2image(fTable2);
+im2_dbl = fTable2image(fTable2);
 if showProcessFlag
 	disp('fTable2(1:10,:)')
 	disp(fTable2(1:10,:))
 	figure;
-	imshow(im2);
-	disp('size(im2)');
-	size(im2)
+	imshow(uint8(im2_dbl));
+	disp('size(im2_dbl)');
+	size(im2_dbl)
 end
 
 
@@ -76,14 +76,14 @@ fTable3(:, 1:2) = (Ay * fTable3(:, 1:2)')';
 
 % my_mu_1_1 = centralMoment(fTable3, 1, 1)
 
-im3 = fTable2image(fTable3);
+im3_dbl = fTable2image(fTable3);
 if showProcessFlag
 	disp('fTable3(1:10,:)')
 	disp(fTable3(1:10,:))
 	figure;
-	imshow(im3);
-	disp('size(im3)');
-	size(im3)
+	imshow(uint8(im3_dbl));
+	disp('size(im3_dbl)');
+	size(im3_dbl)
 end
 
 
@@ -117,47 +117,25 @@ y_min_scale = round(mDelta * y_min);
 y_max_scale = round(mDelta * y_max);
 scaleWidth  = y_max_scale - y_min_scale + 1;
 
-% disp(['scaleHeight = ' num2str(scaleHeight)]);
-% disp(['scaleWidth = ' num2str(scaleWidth)]);
-% disp(['mAlpha = ' num2str(mAlpha)]);
-% disp(['mDelta = ' num2str(mDelta)]);
-
-% counter = 0;
 while (scaleHeight ~= normHeight) || (scaleWidth ~= normWidth)
-	% counter = counter + 1;
-	% if counter > 10
-	% 	break;
-	% end
-
-	% disp(['scaleHeight = ' num2str(scaleHeight)]);
-	% disp(['scaleWidth = ' num2str(scaleWidth)]);
-	% disp(['mAlpha = ' num2str(mAlpha)]);
-	% disp(['mDelta = ' num2str(mDelta)]);
+	
 	if scaleHeight > normHeight
 		extendAlphaUB = mAlpha;
 		mAlpha = (extendAlphaLB + extendAlphaUB) / 2;
-		% idealAlphaUB = mAlpha;
-		% mAlpha = (mAlpha - idealAlphaLB) * rand(1) + idealAlphaLB;
-		% mAlpha = (mAlphaCT - idealAlphaLB) * rand(1) + idealAlphaLB;
+		
 	elseif scaleHeight < normHeight
 		extendAlphaLB = mAlpha;
 		mAlpha = (extendAlphaLB + extendAlphaUB) / 2;
-		% idealAlphaLB = mAlpha;
-		% mAlpha = (idealAlphaUB - mAlpha) * rand(1) + mAlpha;
-		% mAlpha = (idealAlphaUB - mAlphaCT) * rand(1) + mAlphaCT;
+		
 	end
 	if scaleWidth > normWidth
 		extendDeltaUB = mDelta;
 		mDelta = (extendDeltaLB + extendDeltaUB) / 2;
-		% idealDeltaUB = mDelta;
-		% mDelta = (mDelta - idealDeltaLB) * rand(1) + idealDeltaLB;
-		% mDelta = (mDeltaCT - idealDeltaLB) * rand(1) + idealDeltaLB;
+		
 	elseif scaleWidth < normWidth
 		extendDeltaLB = mDelta;
 		mDelta = (extendDeltaLB + extendDeltaUB) / 2;
-		% idealDeltaLB = mDelta;
-		% mDelta = (idealDeltaUB - mDelta) * rand(1) + mDelta;
-		% mDelta = (idealDeltaUB - mDeltaCT) * rand(1) + mDeltaCT;
+		
 	end
 	x_min_scale = round(mAlpha * x_min);
 	x_max_scale = round(mAlpha * x_max);
@@ -166,11 +144,6 @@ while (scaleHeight ~= normHeight) || (scaleWidth ~= normWidth)
 	y_max_scale = round(mDelta * y_max);
 	scaleWidth  = y_max_scale - y_min_scale + 1;
 end
-
-% disp(['scaleHeight = ' num2str(scaleHeight)]);
-% disp(['scaleWidth = ' num2str(scaleWidth)]);
-% disp(['mAlpha = ' num2str(mAlpha)]);
-% disp(['mDelta = ' num2str(mDelta)]);
 
 As = [mAlpha 0; 0 mDelta];
 
@@ -187,15 +160,15 @@ mu_0_5 = centralMoment(fTable4, 0, 5);
 % 	isGood = false;
 % end
 
-im4 = fTable2image(fTable4);
+im4_dbl = fTable2image(fTable4);
 if showProcessFlag
 	disp('fTable4(1:10,:)')
 	disp(fTable4(1:10,:))
 	figure;
-	imshow(im4);
+	imshow(im4_dbl);
 end
 
-normalizedImg = im4;
+normalizedImg_dbl = im4_dbl;
 normFTable = fTable4;
 SYXMatrix = As * Ay * Ax;
 

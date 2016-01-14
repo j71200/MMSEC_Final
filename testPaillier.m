@@ -1,6 +1,6 @@
 % Paillier
 
-function [recM] = testPaillier(m)
+function [c, recM] = testPaillier(m)
 
 % =================
 % key gen

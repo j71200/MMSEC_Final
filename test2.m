@@ -2,65 +2,28 @@ close all
 clear
 clc
 
-% N_pk = 72899;
-% e_pk = 7;
-% d_sk = 62023;
-% M = 124; % 53280
+img = imread('./Experiment/lena.bmp');
+img = rgb2gray(img);
 
-% % mc = crypt(M,N_pk,e_pk)
-% % recC = crypt(mc,N_pk,d_sk)
+% img_dbl = double(img);
 
-% % smallPlainImage_dbl = zeros(2) + M;
-% smallPlainImage_dbl = 100* [21, 491; 87, 123];
-% encryptedImg_dbl = cryptImage(smallPlainImage_dbl, N_pk, e_pk)
+img_dct = dct2(img);
 
-% aa = cryptImage(encryptedImg_dbl, N_pk, d_sk)
-
-% dsfj=sfji;
+figure;
+image(img_dct);
 
 
-plainImage = imread('./Experiment/lena.bmp');
-plainImage = rgb2gray(plainImage);
+img_dct_round = round(img_dct);
 
-plainImage_dbl = double(plainImage);
-
-
-outputSize = [128, 128];
-% outputSize = [32, 32];
-% smallPlainImage_dbl = imresize(plainImage_dbl, outputSize);
-smallPlainImage = imresize(plainImage, outputSize);
-
-smallPlainImage_dbl = double(smallPlainImage);
+diff_dct = img_dct_round - img_dct;
+sum(sum(diff_dct^2))
 
 
-N_pk = 72899;
-e_pk = 7;
+img_dct_idct = idct2(img_dct);
+img_dct_round_idct = idct2(img_dct_round);
 
-tic
-encryptedImg_dbl = cryptImage(smallPlainImage_dbl, N_pk, e_pk);
-toc
-
-d_sk = 62023;
-tic
-decryptedImg_dbl = cryptImage(encryptedImg_dbl, N_pk, d_sk);
-toc
-
-
-
-smallPlainImage = uint8(smallPlainImage_dbl);
-encryptedImg = uint8(encryptedImg_dbl);
-decryptedImg = uint8(decryptedImg_dbl);
-
-figure('name', 'smallPlainImage');
-imshow(smallPlainImage);
-
-figure('name', 'encryptedImg');
-imshow(encryptedImg);
-
-figure('name', 'decryptedImg');
-imshow(decryptedImg);
-
-
+diff_dct_idct = img_dct_round_idct - img_dct_idct;
+sum(sum(diff_dct_idct^2))
 
 
 

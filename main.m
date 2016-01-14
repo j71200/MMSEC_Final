@@ -11,7 +11,6 @@ originalImage = imread('./Experiment/airplane.bmp');
 originalImage = rgb2gray(originalImage);
 originalImage_dbl = double(originalImage);
 
-
 %1 - Shift down without Crop
 %2 - Shift right without Crop
 %3 - Rotate without Crop
@@ -20,11 +19,11 @@ originalImage_dbl = double(originalImage);
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
 
-newAllInOne(originalImage_dbl, 1, 1);
+% newAllInOne(originalImage_dbl, 1, 1);
 
-% for attackType = 1:7
-% 	newAllInOne(originalImage_dbl, attackType, 0);
-% end
+for attackType = 1:7
+	newAllInOne(originalImage_dbl, attackType, 0);
+end
 
 
 

@@ -1,10 +1,16 @@
 function [cipherText] = paillierEncrypt(m, n, g)
 
-nSquare = n^2;
-r = 3;
-c = powerMod(g, m, nSquare) * powerMod(r, n, nSquare);
-c = mod(c, nSquare);
+if nnz(m > n) > 0
+	disp('Error, message > n_pk');
+	ERROR = HERE;
+	
+else
+	nSquare = n^2;
+	r = 3;
+	c = powerMod(g, m, nSquare) * powerMod(r, n, nSquare);
+	c = mod(c, nSquare);
 
-cipherText = c;
+	cipherText = c;
+end
 
 end
