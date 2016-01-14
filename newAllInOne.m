@@ -23,8 +23,11 @@ normWidth  = 512;
 % =================
 % KeyGen
 % =================
-primeP = 17;
-primeQ = 19;
+primeP = 1667;
+primeQ = 1669;
+
+% primeP = 17;
+% primeQ = 19;
 
 [n_pk, g_pk, lambda_sk, mu_sk] = paillierKeygen(primeP, primeQ);
 nSquare = n_pk^2;
@@ -32,7 +35,9 @@ nSquare = n_pk^2;
 % ==========================
 % Encrypt Image
 % ==========================
-trickFactor = 1;
+% disp('Embedding watermark!!!');
+
+trickFactor = 10^4;
 encryptedImg_dbl = paillierEncrypt(originalImage_dbl * trickFactor + 1, n_pk, g_pk);
 
 if isShowFig
@@ -98,6 +103,7 @@ end
 % ==========================
 % Attack
 % ==========================
+% disp('Attacking!!!');
 % attackType = 9;
 %1 - Shift down without Crop
 %2 - Shift right without Crop
@@ -130,6 +136,7 @@ encryptedAttWmImage_dbl = attackGrayDbl(encryptedWmImage_dbl, attackType, paraLi
 % ==========================
 % Normalization II - Attack
 % ==========================
+% disp('Decrypt!!!');
 [normEncryptedAttWmImage_dbl, normEncryptedAttFTable, attSYXMatrix, attMeanVector] = normalizeImage(encryptedAttWmImage_dbl, normHeight, normWidth, false);
 
 
@@ -172,6 +179,7 @@ end
 % ==========================
 % Extraction
 % ==========================
+% disp('Extracting!!!');
 % Step 2-(a)
 % Regenerate the watermark patterns - DONE
 

@@ -7,7 +7,7 @@ n = p * q;
 
 g = n + 1;
 mLambda = phi;
-mMu = powerMod(phi, phi-1, n);
+mMu = speedPowerMod(phi, phi-1, n);
 
 n_pk = n;
 g_pk = g;
