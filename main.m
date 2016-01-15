@@ -20,7 +20,7 @@ originalImage_dbl = double(originalImage);
 %7 - Shearing in x&y without Crop
 
 tic
-newAllInOne(originalImage_dbl, 1, false);
+newAllInOne(originalImage_dbl, 1, 1);
 toc
 % for attackType = 1:7
 % 	newAllInOne(originalImage_dbl, attackType, 0);

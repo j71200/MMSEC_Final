@@ -23,8 +23,8 @@ normWidth  = 512;
 % =================
 % KeyGen
 % =================
-primeP = 1667;
-primeQ = 1669;
+primeP = 251;
+primeQ = 257;
 
 % primeP = 17;
 % primeQ = 19;
@@ -37,7 +37,10 @@ nSquare = n_pk^2;
 % ==========================
 % disp('Embedding watermark!!!');
 
-trickFactor = 10^4;
+trickFactor = 10^0;
+a = originalImage_dbl * trickFactor + 1;
+max(max(a))
+min(min(a))
 encryptedImg_dbl = paillierEncrypt(originalImage_dbl * trickFactor + 1, n_pk, g_pk);
 
 if isShowFig

@@ -1,7 +1,7 @@
 function [decryptedText] = paillierDecrypt(c, n, mLambda, mMu)
 
 nSquare = n^2;
-recU = speedPowerMod(c, mLambda, nSquare);
+recU = fastPowerMod(c, mLambda, nSquare);
 recL = floor((recU-1) / n);
 recM = mod(recL * mMu, n);
 

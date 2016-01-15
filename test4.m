@@ -10,7 +10,7 @@ base = 19923;
 power = randi([0, 255], 512);
 modNum = 1667 * 1669;
 
-res = speedPowerMod(base, power, modNum);
+res = fastPowerMod(base, power, modNum);
 
 
 % tic
