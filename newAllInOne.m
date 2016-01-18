@@ -1,19 +1,21 @@
-function [wmSignature, wmSignature_reg] = newAllInOne(originalImage_uint, attackType, isShowFig)
+function [wmSignature, wmSignature_reg] = newAllInOne(originalImage_uint, attackType, isShowProcess)
 
 % close all
 % clear('all');
 % clc
 
-tic
-disp('Start execuse');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	tic
+	disp('Start execuse');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 
 % originalImage = imread('./Experiment/airplane.bmp');
 % originalImage = rgb2gray(originalImage);
 % originalImage_uint = uint64(originalImage);
 % attackType = 6;
-% isShowFig = true;
+% isShowProcess = true;
 
 
 % =================
@@ -35,23 +37,27 @@ r_uint = 3;
 % p_uint = uint64(17);
 % q_uint = uint64(19);
 
-disp('Encrypting Original Image!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('Encrypting Original Image!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 [n_uint, g_uint, lambda_uint, mu_uint] = paillierKeygen(p_uint, q_uint);
 nSquare_uint = n_uint^2;
 
 % ==========================
 % Encrypt Image
 % ==========================
-disp('Embedding watermark!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('Embedding watermark!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 
 trickFactor_uint = uint64(10^0);
 encryptedImg_uint = paillierEncrypt(originalImage_uint * trickFactor_uint + 1, n_uint, g_uint, r_uint);
 
-% if isShowFig
+% if isShowProcess
 % 	encryptedImg = uint8(encryptedImg_uint);
 % 	figure('name', 'encryptedImg');
 % 	imshow(encryptedImg);
@@ -83,7 +89,7 @@ encryptedWmSignature2_idct_uint = paillierEncrypt(wmSignature2_idct_trick_uint, 
 
 encryptedWmImage_uint = mod(encryptedImg_uint .* encryptedWmSignature2_idct_uint, nSquare_uint);
 
-% if isShowFig
+% if isShowProcess
 % 	encryptedWmImage = uint8(encryptedWmImage_uint);
 % 	figure('name','encryptedWmImage');
 % 	imshow(encryptedWmImage)
@@ -93,7 +99,7 @@ encryptedWmImage_uint = mod(encryptedImg_uint .* encryptedWmSignature2_idct_uint
 % ==========================
 % Test decrypt
 % ==========================
-% if isShowFig
+% if isShowProcess
 % 	trickedWmImage_uint = paillierDecrypt(encryptedWmImage_uint, n_uint, lambda_uint, mu_uint);
 % 	trickedWmImage = uint8(trickedWmImage_uint);
 
@@ -101,22 +107,21 @@ encryptedWmImage_uint = mod(encryptedImg_uint .* encryptedWmSignature2_idct_uint
 % 	imshow(trickedWmImage);
 % end
 
-
-
-
-disp('Pre-normalization!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('Pre-normalization!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 
 [encryptedNormalWmImage_uint, normEncryptedWmFTableX, normEncryptedWmFTableY, normEncryptedWmFTableF_uint, SYXMatrix, meanVector] = normalizeImage(encryptedWmImage_uint, normHeight, normWidth, false);
 
-if isShowFig
+if isShowProcess
 	encryptedNormalWmImage = uint8(encryptedNormalWmImage_uint);
 	figure('name', 'encryptedNormalWmImage');
 	imshow(encryptedNormalWmImage)
 end
 
-if isShowFig
+if isShowProcess
 	prenormalWmImage_uint = paillierDecrypt(encryptedNormalWmImage_uint, n_uint, lambda_uint, mu_uint);
 	prenormalWmImage = uint8(prenormalWmImage_uint);
 
@@ -156,19 +161,15 @@ paraList(7) = 1;
 
 % 恐怕不能attack在encrypted上，因為imrotate和imresize都只能用在uint8上面
 
-disp('In Attacking: decrypting!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('In Attacking: decrypting!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 wmImage_uint = paillierDecrypt(encryptedWmImage_uint, n_uint, lambda_uint, mu_uint);
 wmImage_uint = (wmImage_uint - 2 + trickShift_uint) / trickFactor_uint;
 
-% disp('###################');
-% aaa_uint = originalImage_uint + wmSignature2_idct_trick_uint + trickShift_uint - 1;
-% aaa = uint8(aaa_uint);
-% psnr(uint8(wmImage_uint), aaa)
-% disp('###################');
-
-% if isShowFig
+% if isShowProcess
 % 	trickedWmImage_uint = paillierDecrypt(encryptedWmImage_uint, n_uint, lambda_uint, mu_uint);
 % 	trickedWmImage = uint8(trickedWmImage_uint);
 
@@ -176,46 +177,47 @@ wmImage_uint = (wmImage_uint - 2 + trickShift_uint) / trickFactor_uint;
 % 	imshow(trickedWmImage);
 % end
 
-disp('In Attacking: attacking!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('In Attacking: attacking!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 attackedWmImage_uint = attackGrayUint(wmImage_uint, attackType, paraList(attackType));
 
-% nnz(attackedWmImage_uint == 0)
-% fsdjio = sfiej;
+if isShowProcess
+	disp('In Attacking: encrypting!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 
-disp('In Attacking: encrypting!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
-% MODIFY here
-% attackedWmImage_uint = attackedWmImage_uint*trickFactor_uint - trickShift_uint + 2;
 occupiedIndex = find(attackedWmImage_uint);
 attackedWmImage_uint(occupiedIndex) = attackedWmImage_uint(occupiedIndex) * trickFactor_uint - trickShift_uint + 2;
 
 encryptedAttWmImage_uint = paillierEncrypt(attackedWmImage_uint, n_uint, g_uint, r_uint^2);
 
 
-% encryptedAttWmImage_uint = attackGrayUint(encryptedWmImage_uint, attackType, paraList(attackType));
-
-
 % ==========================
 % Normalization II - Attack
 % ==========================
-disp('Normalization!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('Normalization!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 
 [normEncryptedAttWmImage_uint, normEncryptedAttFTableX, normEncryptedAttFTableY, normEncryptedAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImage(encryptedAttWmImage_uint, normHeight, normWidth, false);
 
-if isShowFig
+if isShowProcess
 	normEncryptedAttWmImage = uint8(normEncryptedAttWmImage_uint);
 	figure('name','normEncryptedAttWmImage');
 	imshow(normEncryptedAttWmImage)
 end
 
-disp('Denormalization!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('Denormalization!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 
 regEncryptedFTableXY = [normEncryptedAttFTableX normEncryptedAttFTableY];
 regEncryptedFTableXY = (SYXMatrix^(-1) * regEncryptedFTableXY')';
@@ -227,7 +229,7 @@ regEncryptedFTableF_uint = normEncryptedAttFTableF_uint;
 
 regEncryptedImage_uint = fTable2image(regEncryptedFTableX, regEncryptedFTableY, regEncryptedFTableF_uint);
 
-if isShowFig
+if isShowProcess
 	regEncryptedImage = uint8(regEncryptedImage_uint);
 	figure('name','regEncryptedImage');
 	imshow(regEncryptedImage)
@@ -237,18 +239,18 @@ end
 % ==========================
 % Decryption
 % ==========================
-disp('Decrypting!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('Decrypting!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 
 decTrickImage_uint = paillierDecrypt(regEncryptedImage_uint, n_uint, lambda_uint, mu_uint);
 
-
 decImage_uint = (decTrickImage_uint + trickShift_uint - 2) / trickFactor_uint;
 
-
 recImage = uint8(decImage_uint);
-if isShowFig
+if isShowProcess
 	figure('name', 'recImage');
 	imshow(recImage);
 end
@@ -256,9 +258,11 @@ end
 % ==========================
 % Extraction
 % ==========================
-disp('Extracting!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('Extracting!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 % Step 2-(a)
 % Regenerate the watermark patterns - DONE
 
@@ -275,11 +279,12 @@ bitErrorRate = 100 * nnz(wmDiff) / length(watermark)
 
 % psnr(recImage, wmImage)
 
-
-toc
-disp('Finished!!!');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	toc
+	disp('Finished!!!');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 
 
 end

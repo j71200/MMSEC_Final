@@ -1,4 +1,4 @@
-function [ normalizedImg_uint, normFTableX, normFTableY, normFTableF_uint, SYXMatrix, meanVector ] = normalizeImage( inputImage_uint, normHeight, normWidth, showProcessFlag)
+function [ normalizedImg_uint, normFTableX, normFTableY, normFTableF_uint, SYXMatrix, meanVector ] = normalizeImage( inputImage_uint, normHeight, normWidth, isShowProcess)
 %NORMALIZEIMAGE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -7,9 +7,11 @@ function [ normalizedImg_uint, normFTableX, normFTableY, normFTableF_uint, SYXMa
 % =====================
 % Centerlizing
 % =====================
-disp('In normalizeImage: Centerlizing');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('In normalizeImage: Centerlizing');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 m_1_0_uint = geoMoment(fTableX, fTableY, fTableF_uint, 1, 0);
 m_0_0_uint = geoMoment(fTableX, fTableY, fTableF_uint, 0, 0);
 m_0_1_uint = geoMoment(fTableX, fTableY, fTableF_uint, 0, 1);
@@ -22,7 +24,7 @@ fTableY1 = fTableY - y_mean;
 fTableF1_uint = fTableF_uint;
 
 
-% if showProcessFlag
+% if isShowProcess
 % 	im1_uint = fTable2image(fTableX, fTableY, fTableF_uint);
 % 	figure;
 % 	imshow(uint8(im1_uint));
@@ -32,9 +34,11 @@ fTableF1_uint = fTableF_uint;
 % =====================
 % Shearing in x
 % =====================
-disp('In normalizeImage: Shearing in x');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('In normalizeImage: Shearing in x');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 mu_0_3_dbl = centralMoment(fTableX1, fTableY1, fTableF1_uint, 0, 3);
 mu_1_2_dbl = centralMoment(fTableX1, fTableY1, fTableF1_uint, 1, 2);
 mu_2_1_dbl = centralMoment(fTableX1, fTableY1, fTableF1_uint, 2, 1);
@@ -53,7 +57,7 @@ fTableX2 = fTableX1 + mBeta * fTableY1;
 fTableY2 = fTableY1;
 fTableF2_uint = fTableF1_uint;
 
-% if showProcessFlag
+% if isShowProcess
 % 	im2_dbl = fTable2image(fTable2);
 % 	disp('fTable2(1:10,:)')
 % 	disp(fTable2(1:10,:))
@@ -67,9 +71,11 @@ fTableF2_uint = fTableF1_uint;
 % =====================
 % Shearing in y
 % =====================
-disp('In normalizeImage: Shearing in y');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('In normalizeImage: Shearing in y');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 mu_1_1_dbl = centralMoment(fTableX2, fTableY2, fTableF2_uint, 1, 1);
 mu_2_0_dbl = centralMoment(fTableX2, fTableY2, fTableF2_uint, 2, 0);
 mGamma = - mu_1_1_dbl / mu_2_0_dbl;
@@ -80,11 +86,8 @@ fTableX3 = fTableX2;
 fTableY3 = fTableY2 + mGamma * fTableX2;
 fTableF3_uint = fTableF2_uint;
 
-% fTable3 = fTable2;
-% fTable3(:, 1:2) = (Ay * fTable3(:, 1:2)')';
-
 % im3_dbl = fTable2image(fTable3);
-% if showProcessFlag
+% if isShowProcess
 % 	disp('fTable3(1:10,:)')
 % 	disp(fTable3(1:10,:))
 % 	figure;
@@ -97,9 +100,11 @@ fTableF3_uint = fTableF2_uint;
 % =====================
 % Scaling
 % =====================
-disp('In normalizeImage: Scaling');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+if isShowProcess
+	disp('In normalizeImage: Scaling');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 x_min = min(fTableX3);
 x_max = max(fTableX3);
 y_min = min(fTableY3);
@@ -127,7 +132,6 @@ y_max_scale = round(mDelta * y_max);
 scaleWidth  = y_max_scale - y_min_scale + 1;
 
 while (scaleHeight ~= normHeight) || (scaleWidth ~= normWidth)
-	% [mAlpha scaleHeight scaleWidth]
 	if scaleHeight > normHeight
 		extendAlphaUB = mAlpha;
 		mAlpha = (extendAlphaLB + extendAlphaUB) / 2;
@@ -160,9 +164,6 @@ fTableX4 = fTableX3 * mAlpha;
 fTableY4 = fTableY3 * mDelta;
 fTableF4_uint = fTableF3_uint;
 
-% fTable4 = fTable3;
-% fTable4(:, 1:2) = (As * fTable4(:, 1:2)')';
-
 % mu_5_0 = centralMoment(fTable4, 5, 0);
 % mu_0_5 = centralMoment(fTable4, 0, 5);
 % [mu_5_0, mu_0_5]
@@ -174,17 +175,18 @@ fTableF4_uint = fTableF3_uint;
 % end
 
 % im4_dbl = fTable2image(fTable4);
-% if showProcessFlag
+% if isShowProcess
 % 	disp('fTable4(1:10,:)')
 % 	disp(fTable4(1:10,:))
 % 	figure;
 % 	imshow(im4_dbl);
 % end
 
-disp('In normalizeImage: Outputing');
-currentTime = clock;
-disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
-
+if isShowProcess
+	disp('In normalizeImage: Outputing');
+	currentTime = clock;
+	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+end
 normalizedImg_uint = fTable2image( fTableX4, fTableY4, fTableF4_uint );
 normFTableX = fTableX3 * mAlpha;
 normFTableY = fTableY3 * mDelta;

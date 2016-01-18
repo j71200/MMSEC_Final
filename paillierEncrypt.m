@@ -15,7 +15,6 @@ elseif nnz(m_uint == 0) > 0
 	occupiedM_uint = m_uint(occupiedIndex);
 
 	nSquare_uint = n_uint^2;
-	% r_uint = uint64(3);
 	c_uint = fastPowerMod(g_uint, occupiedM_uint, nSquare_uint) * fastPowerMod(r_uint, n_uint, nSquare_uint);
 	if c_uint == UINT64MAX
 		disp('Warning, c_uint == UINT64MAX');
@@ -24,16 +23,9 @@ elseif nnz(m_uint == 0) > 0
 
 	cipherText = uint64(zeros(size(m_uint)));
 	cipherText(occupiedIndex) = c_uint;
-	% disp('Message include zero');
-	% ERROR = HERE;
 
 else
-	% m_uint = uint64(m);
-	% n_uint = uint64(n);
-	% g_uint = uint64(g);
-
 	nSquare_uint = n_uint^2;
-	% r_uint = uint64(3);
 	c_uint = fastPowerMod(g_uint, m_uint, nSquare_uint) * fastPowerMod(r_uint, n_uint, nSquare_uint);
 	if c_uint == UINT64MAX
 		disp('Warning, c_uint == UINT64MAX');

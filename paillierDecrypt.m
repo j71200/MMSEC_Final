@@ -9,7 +9,6 @@ elseif nnz(c_uint < 0) > 0
 	ERROR = HERE;
 
 elseif nnz(c_uint == 0) > 0
-	% decryptedText_uint = uint64(zeros(size(c_uint)));
 	occupiedIndex = find(c_uint);
 	occupiedC_uint = c_uint(occupiedIndex);
 
