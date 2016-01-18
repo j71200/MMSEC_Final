@@ -1,2 +1,0 @@
-PSNR = 49.89
-Pixel Error Rate =  0.3054

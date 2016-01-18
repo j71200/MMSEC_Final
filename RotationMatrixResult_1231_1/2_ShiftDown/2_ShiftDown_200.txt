@@ -1,2 +1,0 @@
-PSNR = Inf
-Pixel Error Rate =  0.0000
