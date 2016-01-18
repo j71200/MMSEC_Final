@@ -1,16 +1,16 @@
-function [n_pk, g_pk, lambda_sk, mu_sk] = paillierKeygen(p, q)
-% p = 17;
-% q = 19;
-phi = (p-1) * (q-1);
+function [n_uint, g_uint, lambda_uint, mu_uint] = paillierKeygen(p_uint, q_uint)
+% p_uint = 17;
+% q_uint = 19;
+phi_uint = (p_uint-1) * (q_uint-1);
 
-n = p * q;
+n_uint = p_uint * q_uint;
 
-g = n + 1;
-mLambda = phi;
-mMu = fastPowerMod(phi, phi-1, n);
+g_uint = n_uint + 1;
+lambda_uint = phi_uint;
+mu_uint = fastPowerMod(phi_uint, phi_uint-1, n_uint);
 
-n_pk = n;
-g_pk = g;
-lambda_sk = mLambda;
-mu_sk = mMu;
+% n_pk = n_uint;
+% g_pk = g_uint;
+% lambda_sk = lambda_uint;
+% mu_sk = mu_uint;
 end

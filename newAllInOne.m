@@ -1,17 +1,19 @@
-function [wmSignature, wmSignature_reg] = newAllInOne(originalImage_dbl, attackType, isShowFig)
+function [wmSignature, wmSignature_reg] = newAllInOne(originalImage_uint, attackType, isShowFig)
 
 % close all
 % clear('all');
 % clc
 
+tic
+disp('Start execuse');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 
 % originalImage = imread('./Experiment/airplane.bmp');
 % originalImage = rgb2gray(originalImage);
-% originalImage_dbl = double(originalImage);
-% attackType = 3;
-% % isShowFig = true;
-% isShowFig = false;
-
+% originalImage_uint = uint64(originalImage);
+% attackType = 6;
+% isShowFig = true;
 
 
 % =================
@@ -23,32 +25,37 @@ normWidth  = 512;
 % =================
 % KeyGen
 % =================
-primeP = 251;
-primeQ = 257;
+p_uint = uint64(251);
+q_uint = uint64(257);
+r_uint = 3;
 
-% primeP = 17;
-% primeQ = 19;
+% p_uint = 151;
+% q_uint = 157;
 
-[n_pk, g_pk, lambda_sk, mu_sk] = paillierKeygen(primeP, primeQ);
-nSquare = n_pk^2;
+% p_uint = uint64(17);
+% q_uint = uint64(19);
+
+disp('Encrypting Original Image!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+[n_uint, g_uint, lambda_uint, mu_uint] = paillierKeygen(p_uint, q_uint);
+nSquare_uint = n_uint^2;
 
 % ==========================
 % Encrypt Image
 % ==========================
-% disp('Embedding watermark!!!');
+disp('Embedding watermark!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 
-trickFactor = 10^0;
-a = originalImage_dbl * trickFactor + 1;
-max(max(a))
-min(min(a))
-encryptedImg_dbl = paillierEncrypt(originalImage_dbl * trickFactor + 1, n_pk, g_pk);
+trickFactor_uint = uint64(10^0);
+encryptedImg_uint = paillierEncrypt(originalImage_uint * trickFactor_uint + 1, n_uint, g_uint, r_uint);
 
-if isShowFig
-	encryptedImg = uint8(encryptedImg_dbl);
-	figure('name', 'encryptedImg');
-	imshow(encryptedImg);
-end
-
+% if isShowFig
+% 	encryptedImg = uint8(encryptedImg_uint);
+% 	figure('name', 'encryptedImg');
+% 	imshow(encryptedImg);
+% end
 
 % Step 2-(a)
 load('data_wm256_pt256x256');
@@ -67,39 +74,54 @@ wmSignature2(middle_band_idx) = wmSignature1;
 wmSignature2_idct = idct2(wmSignature2);
 
 % Step 3
-wmSignature2_idct_trick = round(wmSignature2_idct * trickFactor);
-trickShift = min(min(wmSignature2_idct_trick));
-wmSignature2_idct_trick = wmSignature2_idct_trick - trickShift + 1;
+wmSignature2_idct_trick_uint = uint64(round(wmSignature2_idct * double(trickFactor_uint)));
+trickShift_uint = min(min(wmSignature2_idct_trick_uint));
+wmSignature2_idct_trick_uint = wmSignature2_idct_trick_uint - trickShift_uint + 1;
 
-encryptedWmSignature2_idct = paillierEncrypt(wmSignature2_idct_trick, n_pk, g_pk);
+encryptedWmSignature2_idct_uint = paillierEncrypt(wmSignature2_idct_trick_uint, n_uint, g_uint, r_uint);
 
 
-encryptedWmImage_dbl = mod(encryptedImg_dbl .* encryptedWmSignature2_idct, nSquare);
+encryptedWmImage_uint = mod(encryptedImg_uint .* encryptedWmSignature2_idct_uint, nSquare_uint);
 
+% if isShowFig
+% 	encryptedWmImage = uint8(encryptedWmImage_uint);
+% 	figure('name','encryptedWmImage');
+% 	imshow(encryptedWmImage)
+% end
+
+
+% ==========================
+% Test decrypt
+% ==========================
+% if isShowFig
+% 	trickedWmImage_uint = paillierDecrypt(encryptedWmImage_uint, n_uint, lambda_uint, mu_uint);
+% 	trickedWmImage = uint8(trickedWmImage_uint);
+
+% 	figure('name', 'trickedWmImage');
+% 	imshow(trickedWmImage);
+% end
+
+
+
+
+disp('Pre-normalization!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+
+[encryptedNormalWmImage_uint, normEncryptedWmFTableX, normEncryptedWmFTableY, normEncryptedWmFTableF_uint, SYXMatrix, meanVector] = normalizeImage(encryptedWmImage_uint, normHeight, normWidth, false);
 
 if isShowFig
-	encryptedWmImage = uint8(encryptedWmImage_dbl);
-	figure('name','encryptedWmImage');
-	imshow(encryptedWmImage)
-end
-
-
-[encryptedNormalWmImage_dbl, normFTable, SYXMatrix, meanVector] = normalizeImage(encryptedWmImage_dbl, normHeight, normWidth, false);
-
-if isShowFig
-	encryptedNormalWmImage = uint8(encryptedNormalWmImage_dbl);
+	encryptedNormalWmImage = uint8(encryptedNormalWmImage_uint);
 	figure('name', 'encryptedNormalWmImage');
 	imshow(encryptedNormalWmImage)
 end
 
-
-
 if isShowFig
-	NormalWmImage_dbl = paillierDecrypt(encryptedNormalWmImage_dbl, n_pk, lambda_sk, mu_sk);
-	NormalWmImage = uint8(NormalWmImage_dbl);
+	prenormalWmImage_uint = paillierDecrypt(encryptedNormalWmImage_uint, n_uint, lambda_uint, mu_uint);
+	prenormalWmImage = uint8(prenormalWmImage_uint);
 
-	figure('name', 'NormalWmImage');
-	imshow(NormalWmImage);
+	figure('name', 'prenormalWmImage');
+	imshow(prenormalWmImage);
 end
 
 
@@ -107,7 +129,6 @@ end
 % Attack
 % ==========================
 % disp('Attacking!!!');
-% attackType = 9;
 %1 - Shift down without Crop
 %2 - Shift right without Crop
 %3 - Rotate without Crop
@@ -133,31 +154,81 @@ paraList(7) = 1;
 % paraList(7) = 0.5;
 
 
-encryptedAttWmImage_dbl = attackGrayDbl(encryptedWmImage_dbl, attackType, paraList(attackType));
+% 恐怕不能attack在encrypted上，因為imrotate和imresize都只能用在uint8上面
+
+disp('In Attacking: decrypting!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+wmImage_uint = paillierDecrypt(encryptedWmImage_uint, n_uint, lambda_uint, mu_uint);
+wmImage_uint = (wmImage_uint - 2 + trickShift_uint) / trickFactor_uint;
+
+% disp('###################');
+% aaa_uint = originalImage_uint + wmSignature2_idct_trick_uint + trickShift_uint - 1;
+% aaa = uint8(aaa_uint);
+% psnr(uint8(wmImage_uint), aaa)
+% disp('###################');
+
+% if isShowFig
+% 	trickedWmImage_uint = paillierDecrypt(encryptedWmImage_uint, n_uint, lambda_uint, mu_uint);
+% 	trickedWmImage = uint8(trickedWmImage_uint);
+
+% 	figure('name', 'trickedWmImage');
+% 	imshow(trickedWmImage);
+% end
+
+disp('In Attacking: attacking!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+attackedWmImage_uint = attackGrayUint(wmImage_uint, attackType, paraList(attackType));
+
+% nnz(attackedWmImage_uint == 0)
+% fsdjio = sfiej;
+
+disp('In Attacking: encrypting!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
+% MODIFY here
+% attackedWmImage_uint = attackedWmImage_uint*trickFactor_uint - trickShift_uint + 2;
+occupiedIndex = find(attackedWmImage_uint);
+attackedWmImage_uint(occupiedIndex) = attackedWmImage_uint(occupiedIndex) * trickFactor_uint - trickShift_uint + 2;
+
+encryptedAttWmImage_uint = paillierEncrypt(attackedWmImage_uint, n_uint, g_uint, r_uint^2);
+
+
+% encryptedAttWmImage_uint = attackGrayUint(encryptedWmImage_uint, attackType, paraList(attackType));
 
 
 % ==========================
 % Normalization II - Attack
 % ==========================
-% disp('Decrypt!!!');
-[normEncryptedAttWmImage_dbl, normEncryptedAttFTable, attSYXMatrix, attMeanVector] = normalizeImage(encryptedAttWmImage_dbl, normHeight, normWidth, false);
+disp('Normalization!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 
+[normEncryptedAttWmImage_uint, normEncryptedAttFTableX, normEncryptedAttFTableY, normEncryptedAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImage(encryptedAttWmImage_uint, normHeight, normWidth, false);
 
 if isShowFig
-	normEncryptedAttWmImage = uint8(normEncryptedAttWmImage_dbl);
+	normEncryptedAttWmImage = uint8(normEncryptedAttWmImage_uint);
 	figure('name','normEncryptedAttWmImage');
 	imshow(normEncryptedAttWmImage)
 end
 
-regEncryptedFTable = normEncryptedAttFTable;
-regEncryptedFTable(:, 1:2) = (SYXMatrix^(-1) * regEncryptedFTable(:, 1:2)')';
-regEncryptedFTable(:, 1) = regEncryptedFTable(:, 1) + meanVector(1);
-regEncryptedFTable(:, 2) = regEncryptedFTable(:, 2) + meanVector(2);
+disp('Denormalization!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 
-regEncryptedImage_dbl = fTable2image(regEncryptedFTable);
+regEncryptedFTableXY = [normEncryptedAttFTableX normEncryptedAttFTableY];
+regEncryptedFTableXY = (SYXMatrix^(-1) * regEncryptedFTableXY')';
+regEncryptedFTableX = regEncryptedFTableXY(:, 1);
+regEncryptedFTableY = regEncryptedFTableXY(:, 2);
+regEncryptedFTableX = regEncryptedFTableX + meanVector(1);
+regEncryptedFTableY = regEncryptedFTableY + meanVector(2);
+regEncryptedFTableF_uint = normEncryptedAttFTableF_uint;
+
+regEncryptedImage_uint = fTable2image(regEncryptedFTableX, regEncryptedFTableY, regEncryptedFTableF_uint);
 
 if isShowFig
-	regEncryptedImage = uint8(regEncryptedImage_dbl);
+	regEncryptedImage = uint8(regEncryptedImage_uint);
 	figure('name','regEncryptedImage');
 	imshow(regEncryptedImage)
 end
@@ -166,14 +237,17 @@ end
 % ==========================
 % Decryption
 % ==========================
+disp('Decrypting!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 
-decTrickImage_dbl = paillierDecrypt(regEncryptedImage_dbl, n_pk, lambda_sk, mu_sk);
+decTrickImage_uint = paillierDecrypt(regEncryptedImage_uint, n_uint, lambda_uint, mu_uint);
 
 
-decImage_dbl = (decTrickImage_dbl + trickShift - 2) / trickFactor;
+decImage_uint = (decTrickImage_uint + trickShift_uint - 2) / trickFactor_uint;
 
 
-recImage = uint8(decImage_dbl);
+recImage = uint8(decImage_uint);
 if isShowFig
 	figure('name', 'recImage');
 	imshow(recImage);
@@ -182,7 +256,9 @@ end
 % ==========================
 % Extraction
 % ==========================
-% disp('Extracting!!!');
+disp('Extracting!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 % Step 2-(a)
 % Regenerate the watermark patterns - DONE
 
@@ -197,8 +273,13 @@ extractedWM = extractedWM > 0;
 wmDiff = extractedWM - watermark;
 bitErrorRate = 100 * nnz(wmDiff) / length(watermark)
 
-
 % psnr(recImage, wmImage)
+
+
+toc
+disp('Finished!!!');
+currentTime = clock;
+disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 
 
 end

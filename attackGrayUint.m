@@ -1,7 +1,7 @@
-function attackedImage_dbl = attackGrayDbl(originalImage_dbl, attackType, para)
+function attackedImage_uint = attackGrayUint(originalImage_uint, attackType, para)
 
-% originalImage_dbl = imread('./airplane.bmp');
-[height, width] = size(originalImage_dbl);
+% originalImage_uint = imread('./airplane.bmp');
+[height, width] = size(originalImage_uint);
 
 %1 - Shift down without Crop
 %2 - Shift right without Crop
@@ -17,8 +17,8 @@ function attackedImage_dbl = attackGrayDbl(originalImage_dbl, attackType, para)
 % ================================================
 % if attackType == 1
 % 	shiftPixel = para;
-% 	attackedImage_dbl = zeros(size(originalImage_dbl));
-% 	attackedImage_dbl(shiftPixel + 1:end, :) = originalImage_dbl(1:end - shiftPixel, :);
+% 	attackedImage_dbl = zeros(size(originalImage_uint));
+% 	attackedImage_dbl(shiftPixel + 1:end, :) = originalImage_uint(1:end - shiftPixel, :);
 % 	disp(['Shift down ' num2str(shiftPixel) ' pixel with Crop']);
 
 
@@ -27,8 +27,8 @@ function attackedImage_dbl = attackGrayDbl(originalImage_dbl, attackType, para)
 % ================================================
 if attackType == 1
 	shiftPixel = para;
-	attackedImage_dbl = zeros(height+shiftPixel, width);
-	attackedImage_dbl(1+shiftPixel:end, :) = originalImage_dbl;
+	attackedImage_uint = uint64(zeros(height+shiftPixel, width));
+	attackedImage_uint(1+shiftPixel:end, :) = originalImage_uint;
 	disp(['Shift down ' num2str(shiftPixel) ' pixel without Crop']);
 
 % ================================================
@@ -36,8 +36,8 @@ if attackType == 1
 % ================================================
 elseif attackType == 2
 	shiftPixel = para;
-	attackedImage_dbl = zeros(height, width+shiftPixel);
-	attackedImage_dbl(:, 1+shiftPixel:end) = originalImage_dbl;
+	attackedImage_uint = uint64(zeros(height, width+shiftPixel));
+	attackedImage_uint(:, 1+shiftPixel:end) = originalImage_uint;
 	disp(['Shift right ' num2str(shiftPixel) ' pixel without Crop']);
 
 % ================================================
@@ -45,7 +45,7 @@ elseif attackType == 2
 % ================================================
 % elseif attackType == 4
 % 	rotateDegree = para;
-% 	rotatedImage = imrotate(originalImage_dbl, rotateDegree);
+% 	rotatedImage = imrotate(originalImage_uint, rotateDegree);
 % 	[temp_height, temp_width] = size(rotatedImage)
 % 	if(temp_height > height && temp_width > width)
 % 		% Croping
@@ -60,9 +60,10 @@ elseif attackType == 2
 % ================================================
 elseif attackType == 3
 	rotateDegree = para;
-	attackedImage_dbl = imrotate(originalImage_dbl, rotateDegree, 'nearest');
-	% attackedImage_dbl = imrotate(originalImage_dbl, rotateDegree, 'bilinear');
-	% attackedImage_dbl = imrotate(originalImage_dbl, rotateDegree, 'bicubic');
+	attackedImage_uint = imrotate(uint8(originalImage_uint), rotateDegree, 'nearest');
+	attackedImage_uint = uint64(attackedImage_uint);
+	% attackedImage_dbl = imrotate(originalImage_uint, rotateDegree, 'bilinear');
+	% attackedImage_dbl = imrotate(originalImage_uint, rotateDegree, 'bicubic');
 	disp(['Rotate ' num2str(rotateDegree) ' degree without Crop']);
 
 % ================================================
@@ -70,18 +71,17 @@ elseif attackType == 3
 % ================================================
 elseif attackType == 4
 	scaleSize = para;
-	attackedImage_dbl = imresize(originalImage_dbl, scaleSize);
+	attackedImage_uint = imresize(uint8(originalImage_uint), scaleSize);
+	attackedImage_uint = uint64(attackedImage_uint);
 	disp(['Scale ' num2str(scaleSize) ' without Crop']);
 
 % ================================================
 % Shearing in x without Crop
 % ================================================
 elseif attackType == 5
-	Ax = [1 para; 0 1];
-
-	fTable = img2ftable(originalImage_dbl);
-	fTable(:, 1:2) = round(Ax * fTable(:, 1:2)')';
-	attackedImage_dbl = fTable2image(fTable);
+	[fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
+	fTableX = fTableX + fTableY * para;
+	attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
 
 	disp(['Shearing in x without Crop']);
 
@@ -89,11 +89,15 @@ elseif attackType == 5
 % Shearing in y without Crop
 % ================================================
 elseif attackType == 6
-	Ay = [1 0; para 1];
+	[fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
+	fTableY = fTableX * para + fTableY;
+	attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
 
-	fTable = img2ftable(originalImage_dbl);
-	fTable(:, 1:2) = round(Ay * fTable(:, 1:2)')';
-	attackedImage_dbl = fTable2image(fTable);
+	% Ay = [1 0; para 1];
+
+	% fTable = image2ftable(originalImage_uint);
+	% fTable(:, 1:2) = round(Ay * fTable(:, 1:2)')';
+	% attackedImage_dbl = fTable2image(fTable);
 
 	disp(['Shearing in y without Crop']);
 
@@ -101,13 +105,18 @@ elseif attackType == 6
 % Shearing in x&y without Crop
 % ================================================
 elseif attackType == 7
-	Ax = [1 para; 0 1];
-	Ay = [1 0; para 1];
-	Axy = Ax * Ay;
+	[fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
+	fTableY = fTableX * para + fTableY;
+	fTableX = fTableX + fTableY * para;
+	attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
 
-	fTable = img2ftable(originalImage_dbl);
-	fTable(:, 1:2) = round(Axy * fTable(:, 1:2)')';
-	attackedImage_dbl = fTable2image(fTable);
+	% Ax = [1 para; 0 1];
+	% Ay = [1 0; para 1];
+	% Axy = Ax * Ay;
+
+	% fTable = image2ftable(originalImage_uint);
+	% fTable(:, 1:2) = round(Axy * fTable(:, 1:2)')';
+	% attackedImage_dbl = fTable2image(fTable);
 
 	disp(['Shearing in x&y without Crop']);
 
@@ -121,16 +130,16 @@ elseif attackType == 8
 	det(AbrMatrix)
 	disp('AbrMatrix==============end');
 
-	tempImage = rgb2ycbcr(originalImage_dbl);
-	fTableY = img2ftable(tempImage(:, :, 1));
+	tempImage = rgb2ycbcr(originalImage_uint);
+	fTableY = image2ftable(tempImage(:, :, 1));
 	fTableY(:, 1:2) = round(AbrMatrix * fTableY(:, 1:2)')';
 	imageY = fTable2image(fTableY);
 
-	fTableCb = img2ftable(tempImage(:, :, 2));
+	fTableCb = image2ftable(tempImage(:, :, 2));
 	fTableCb(:, 1:2) = round(AbrMatrix * fTableCb(:, 1:2)')';
 	imageCb = fTable2image(fTableCb);
 
-	fTableCr = img2ftable(tempImage(:, :, 3));
+	fTableCr = image2ftable(tempImage(:, :, 3));
 	fTableCr(:, 1:2) = round(AbrMatrix * fTableCr(:, 1:2)')';
 	imageCr = fTable2image(fTableCr);
 

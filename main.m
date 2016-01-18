@@ -2,14 +2,14 @@ close all
 clear
 clc
 
-originalImage = imread('./Experiment/airplane.bmp');
+% originalImage = imread('./Experiment/airplane.bmp');
 % originalImage = imread('./Experiment/baboon.bmp');
 % originalImage = imread('./Experiment/fruits.bmp');
-% originalImage = imread('./Experiment/peppers.bmp');
+originalImage = imread('./Experiment/peppers.bmp');
 % originalImage = imread('./Experiment/lena.bmp');
 
 originalImage = rgb2gray(originalImage);
-originalImage_dbl = double(originalImage);
+originalImage_uint = uint64(originalImage);
 
 %1 - Shift down without Crop
 %2 - Shift right without Crop
@@ -19,9 +19,8 @@ originalImage_dbl = double(originalImage);
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
 
-tic
-newAllInOne(originalImage_dbl, 1, 1);
-toc
+newAllInOne(originalImage_uint, 3, true);
+
 % for attackType = 1:7
 % 	newAllInOne(originalImage_dbl, attackType, 0);
 % end
