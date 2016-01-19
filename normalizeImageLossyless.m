@@ -1,8 +1,8 @@
-function [ normalizedImg_uint, normFTableX, normFTableY, normFTableF_uint, SYXMatrix, meanVector ] = normalizeImage( inputImage_uint, normHeight, normWidth, isShowProcess)
+function [ normalizedImg_uint, normFTableX, normFTableY, normFTableF_uint, SYXMatrix, meanVector ] = normalizeImageLossyless( fTableX, fTableY, fTableF_uint, normHeight, normWidth, isShowProcess)
 %NORMALIZEIMAGE Summary of this function goes here
 %   Detailed explanation goes here
 
-[fTableX, fTableY, fTableF_uint] = image2ftable( inputImage_uint );
+% [fTableX, fTableY, fTableF_uint] = image2ftable( inputImage_uint );
 
 % =====================
 % Centerlizing
