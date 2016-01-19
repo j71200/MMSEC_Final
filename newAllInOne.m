@@ -81,6 +81,13 @@ wmSignature2_idct = idct2(wmSignature2);
 % Embedding Watermark
 % ==========================
 wmImage_uint = originalImage_uint + uint64(wmSignature2_idct);
+
+if isShowProcess
+	wmImage = uint8(wmImage_uint);
+	figure('name', 'wmImage');
+	imshow(wmImage)
+end
+
 % Step 3
 % wmSignature2_idct_trick_uint = uint64(round(wmSignature2_idct * double(trickFactor_uint)));
 % trickShift_uint = min(min(wmSignature2_idct_trick_uint));
@@ -113,6 +120,13 @@ wmImage_uint = originalImage_uint + uint64(wmSignature2_idct);
 % Pre-normalization
 % ==========================
 [normalWmImage_uint, normWmFTableX, normWmFTableY, normWmFTableF_uint, SYXMatrix, meanVector] = normalizeImage(wmImage_uint, normHeight, normWidth, false);
+
+if isShowProcess
+	normalWmImage = uint8(normalWmImage_uint);
+	figure('name', 'normalWmImage');
+	imshow(normalWmImage)
+end
+
 
 % if isShowProcess
 % 	disp('Pre-normalization!!!');
@@ -167,6 +181,13 @@ paraList(7) = 1;
 
 attackedWmImage_uint = attackGrayUint(wmImage_uint, attackType, paraList(attackType));
 
+if isShowProcess
+	attackedWmImage = uint8(attackedWmImage_uint);
+	figure('name','attackedWmImage');
+	imshow(attackedWmImage);
+end
+
+
 % 恐怕不能attack在encrypted上，因為imrotate和imresize都只能用在uint8上面
 
 % if isShowProcess
@@ -212,6 +233,13 @@ attackedWmImage_uint = attackGrayUint(wmImage_uint, attackType, paraList(attackT
 % ==========================
 [normAttWmImage_uint, normAttFTableX, normAttFTableY, normAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImage(attackedWmImage_uint, normHeight, normWidth, false);
 
+if isShowProcess
+	normAttWmImage = uint8(normAttWmImage_uint);
+	figure('name','normAttWmImage');
+	imshow(normAttWmImage);
+end
+
+
 % if isShowProcess
 % 	disp('In Extracting - Encrypting!!!');
 % 	currentTime = clock;
@@ -252,6 +280,11 @@ regFTableF_uint = normAttFTableF_uint;
 regImage_uint = fTable2image(regFTableX, regFTableY, regFTableF_uint);
 
 recImage = uint8(regImage_uint);
+
+if isShowProcess
+	figure('name', 'recImage');
+	imshow(recImage);
+end
 
 % if isShowProcess
 % 	disp('In Extracting - De-normalization!!!');

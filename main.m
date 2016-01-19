@@ -19,12 +19,12 @@ originalImage_uint = uint64(originalImage);
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
 
-% newAllInOne(originalImage_uint, 6, true);
+newAllInOne(originalImage_uint, 6, true);
 % newAllInOne(originalImage_uint, 4, false);
 
-for attackType = 1:7
-	newAllInOne(originalImage_uint, attackType, false);
-end
+% for attackType = 1:7
+% 	newAllInOne(originalImage_uint, attackType, false);
+% end
 
 
 
