@@ -60,10 +60,21 @@ elseif attackType == 2
 % ================================================
 elseif attackType == 3
 	rotateDegree = para;
-	attackedImage_uint = imrotate(uint8(originalImage_uint), rotateDegree, 'nearest');
-	attackedImage_uint = uint64(attackedImage_uint);
-	% attackedImage_dbl = imrotate(originalImage_uint, rotateDegree, 'bilinear');
-	% attackedImage_dbl = imrotate(originalImage_uint, rotateDegree, 'bicubic');
+	theta = deg2rad(rotateDegree);
+	rotateMatrix = [cos(theta) sin(theta); -sin(theta) cos(theta)];
+	[fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
+	fTableXY = [fTableX fTableY];
+	fTableXY = (rotateMatrix * fTableXY')';
+	fTableX = fTableXY(:, 1);
+	fTableY = fTableXY(:, 2);
+	attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
+
+	% figure;
+	% imshow(uint8(attackedImage_uint));
+
+	% attackedImage_uint = imrotate(uint8(originalImage_uint), rotateDegree, 'nearest');
+	% attackedImage_uint = uint64(attackedImage_uint);
+
 	disp(['Rotate ' num2str(rotateDegree) ' degree without Crop']);
 
 % ================================================
@@ -71,8 +82,19 @@ elseif attackType == 3
 % ================================================
 elseif attackType == 4
 	scaleSize = para;
-	attackedImage_uint = imresize(uint8(originalImage_uint), scaleSize);
-	attackedImage_uint = uint64(attackedImage_uint);
+
+	[fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
+	fTableX = fTableX * scaleSize;
+	fTableY = fTableY * scaleSize;
+	% fTableXY = [fTableX fTableY];
+	% fTableXY = (rotateMatrix * fTableXY')';
+	% fTableX = fTableXY(:, 1);
+	% fTableY = fTableXY(:, 2);
+	attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
+
+	% attackedImage_uint = imresize(uint8(originalImage_uint), scaleSize);
+	% attackedImage_uint = uint64(attackedImage_uint);
+
 	disp(['Scale ' num2str(scaleSize) ' without Crop']);
 
 % ================================================
@@ -94,7 +116,6 @@ elseif attackType == 6
 	attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
 
 	% Ay = [1 0; para 1];
-
 	% fTable = image2ftable(originalImage_uint);
 	% fTable(:, 1:2) = round(Ay * fTable(:, 1:2)')';
 	% attackedImage_dbl = fTable2image(fTable);
@@ -113,7 +134,6 @@ elseif attackType == 7
 	% Ax = [1 para; 0 1];
 	% Ay = [1 0; para 1];
 	% Axy = Ax * Ay;
-
 	% fTable = image2ftable(originalImage_uint);
 	% fTable(:, 1:2) = round(Axy * fTable(:, 1:2)')';
 	% attackedImage_dbl = fTable2image(fTable);

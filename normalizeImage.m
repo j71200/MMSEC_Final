@@ -164,9 +164,10 @@ fTableX4 = fTableX3 * mAlpha;
 fTableY4 = fTableY3 * mDelta;
 fTableF4_uint = fTableF3_uint;
 
-% mu_5_0 = centralMoment(fTable4, 5, 0);
-% mu_0_5 = centralMoment(fTable4, 0, 5);
-% [mu_5_0, mu_0_5]
+mu_5_0 = centralMoment(fTableX4, fTableY4, fTableF4_uint, 5, 0);
+mu_0_5 = centralMoment(fTableX4, fTableY4, fTableF4_uint, 0, 5);
+disp('[mu_5_0, mu_0_5]:');
+[mu_5_0, mu_0_5]
 
 % if (mu_5_0 > 0) && (mu_0_5 > 0)
 % 	isGood = true;
