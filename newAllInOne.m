@@ -300,6 +300,17 @@ bitErrorRate = 100 * nnz(wmDiff) / length(watermark)
 
 disp(['psnr = ' num2str(psnr(wmImage, recImage))]);
 
+
+
+
+% SOME TEST
+someDiff = double(normEncryptedAttWmImage_uint) - double(encryptedNormalWmImage_uint);
+someDiff = abs(someDiff);
+max(max(someDiff))
+figure('name', 'someDiff');
+image(someDiff);
+
+
 if isShowProcess
 	toc
 	disp('Finished!!!');
