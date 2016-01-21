@@ -1,10 +1,10 @@
 close all; clear; clc;
 
 % originalImage = imread('./Experiment/airplane.bmp');
-% originalImage = imread('./Experiment/baboon.bmp');
+originalImage = imread('./Experiment/baboon.bmp');
 % originalImage = imread('./Experiment/fruits.bmp');
 % originalImage = imread('./Experiment/peppers.bmp');
-originalImage = imread('./Experiment/lena.bmp');
+% originalImage = imread('./Experiment/lena.bmp');
 
 originalImage = rgb2gray(originalImage);
 originalImage_uint = uint64(originalImage);
@@ -18,17 +18,12 @@ originalImage_uint = uint64(originalImage);
 %7 - Shearing in x&y without Crop
 %8 - JPEG Compression
 
-% newAllInOne(originalImage_uint, 3, true);
+newAllInOne(originalImage_uint, 3, true);
 % newAllInOne(originalImage_uint, 3, false);
 
-for attackType = 4:8
-	newAllInOne(originalImage_uint, attackType, false);
-end
-
-
-
-
-
+% for attackType = 1:8
+% 	newAllInOne(originalImage_uint, attackType, false);
+% end
 
 
 

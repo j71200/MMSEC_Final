@@ -1,5 +1,8 @@
 function [wmSignature, wmSignature_reg] = newAllInOne(originalImage_uint, attackType, isShowProcess)
 
+% With JPEG Compression attack
+
+
 % close all
 % clear('all');
 % clc
@@ -105,8 +108,6 @@ if isShowProcess
 
 	figure('name', 'trickedWmImage');
 	imshow(trickedWmImage);
-	disp('nnz(trickedWmImage): ');
-	nnz(trickedWmImage)
 end
 
 % ==========================
@@ -118,7 +119,7 @@ if isShowProcess
 	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 end
 
-[encryptedNormalWmImage_uint, normEncryptedWmFTableX, normEncryptedWmFTableY, normEncryptedWmFTableF_uint, SYXMatrix, meanVector] = normalizeImage(encryptedWmImage_uint, normHeight, normWidth, false);
+[encryptedNormalWmImage_uint, normEncryptedWmFTableX, normEncryptedWmFTableY, normEncryptedWmFTableF_uint, SYXMatrix, meanVector] = normalizeImage(encryptedWmImage_uint, normHeight, normWidth, false, 2);
 
 if isShowProcess
 	encryptedNormalWmImage = uint8(encryptedNormalWmImage_uint);
@@ -146,6 +147,7 @@ end
 %5 - Shearing in x without Crop
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
+%8 - JPEG Compression
 paraList = zeros(8, 1);
 paraList(1) = 200;
 paraList(2) = 200;
@@ -154,6 +156,7 @@ paraList(4) = 1.5;
 paraList(5) = 1;
 paraList(6) = 1;
 paraList(7) = 1;
+paraList(8) = 100;
 
 % paraList(1) = 10;
 % paraList(2) = 10;
@@ -192,14 +195,13 @@ if isShowProcess
 	currentTime = clock;
 	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 end
-attackedWmImage_uint = attackGrayUint(wmImage_uint, attackType, paraList(attackType));
+
+[attackedWmImageFTableX, attackedWmImageFTableY, attackedWmImageFTableF_uint, attackedWmImage_uint] = attackGrayUintLossyless(wmImage_uint, attackType, paraList(attackType));
 
 if isShowProcess
 	attackedWmImage = uint8(attackedWmImage_uint);
 	figure('name','attackedWmImage');
 	imshow(attackedWmImage);
-	disp('nnz(attackedWmImage): ');
-	nnz(attackedWmImage)
 end
 
 
@@ -212,10 +214,10 @@ if isShowProcess
 	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 end
 
-occupiedIndex = find(attackedWmImage_uint);
-attackedWmImage_uint(occupiedIndex) = attackedWmImage_uint(occupiedIndex) * trickFactor_uint - trickShift_uint + 2;
+occupiedIndex = find(attackedWmImageFTableF_uint);
+attackedWmImageFTableF_uint(occupiedIndex) = attackedWmImageFTableF_uint(occupiedIndex) * trickFactor_uint - trickShift_uint + 2;
 
-encryptedAttWmImage_uint = paillierEncrypt(attackedWmImage_uint, n_uint, g_uint, r_uint^2);
+encryptedAttWmImageFTableF_uint = paillierEncrypt(attackedWmImageFTableF_uint, n_uint, g_uint, r_uint^2);
 
 if isShowProcess
 	disp('In Extracting - Normalization!!!');
@@ -223,7 +225,7 @@ if isShowProcess
 	disp([num2str(currentTime(4)) ':' num2str(currentTime(5))]);
 end
 
-[normEncryptedAttWmImage_uint, normEncryptedAttFTableX, normEncryptedAttFTableY, normEncryptedAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImage(encryptedAttWmImage_uint, normHeight, normWidth, false);
+[normEncryptedAttWmImage_uint, normEncryptedAttFTableX, normEncryptedAttFTableY, normEncryptedAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImageLossyless(attackedWmImageFTableX, attackedWmImageFTableY, encryptedAttWmImageFTableF_uint, normHeight, normWidth, false, 2);
 
 if isShowProcess
 	normEncryptedAttWmImage = uint8(normEncryptedAttWmImage_uint);
@@ -270,7 +272,19 @@ decTrickImage_uint = paillierDecrypt(regEncryptedImage_uint, n_uint, lambda_uint
 
 decImage_uint = (decTrickImage_uint + trickShift_uint - 2) / trickFactor_uint;
 
+
 recImage = uint8(decImage_uint);
+
+% ==========================
+% Correct Process
+% ==========================
+% recImage = imrotate(recImage, 180);
+% tmpImg = uint8(zeros(512, 512));
+% tmpImg(2:end, :) = recImage;
+% recImage = tmpImg;
+
+% size(recImage)
+
 if isShowProcess
 	figure('name', 'recImage');
 	imshow(recImage);
@@ -304,11 +318,11 @@ disp(['psnr = ' num2str(psnr(wmImage, recImage))]);
 
 
 % SOME TEST
-someDiff = double(normEncryptedAttWmImage_uint) - double(encryptedNormalWmImage_uint);
-someDiff = abs(someDiff);
-max(max(someDiff))
-figure('name', 'someDiff');
-image(someDiff);
+% someDiff = double(normEncryptedAttWmImage_uint) - double(encryptedNormalWmImage_uint);
+% someDiff = abs(someDiff);
+% max(max(someDiff))
+% figure('name', 'someDiff');
+% image(someDiff);
 
 
 if isShowProcess
