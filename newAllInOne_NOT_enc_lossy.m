@@ -190,7 +190,7 @@ paraList(8) = 50;
 % paraList(5) = 0.5;
 % paraList(6) = 0.5;
 % paraList(7) = 0.5;
-% paraList(8) = 50;
+paraList(8) = 50;
 
 % TEST, TO BE DELETE
 % [attackedWmImageFTableX, attackedWmImageFTableY, attackedWmImageFTableF_uint] = image2ftable(wmImage_uint);

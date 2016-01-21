@@ -1,7 +1,6 @@
 function [wmSignature, wmSignature_reg] = newAllInOne(originalImage_uint, attackType, isShowProcess)
 
 % With JPEG Compression Attack
-% Lossy
 
 
 
@@ -172,7 +171,6 @@ end
 %5 - Shearing in x without Crop
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
-%8 - JPEG Compression
 paraList = zeros(8, 1);
 paraList(1) = 200;
 paraList(2) = 200;
@@ -181,7 +179,7 @@ paraList(4) = 1.5;
 paraList(5) = 1;
 paraList(6) = 1;
 paraList(7) = 1;
-paraList(8) = 50;
+paraList(8) = 100;
 
 % paraList(1) = 10;
 % paraList(2) = 10;
@@ -190,14 +188,13 @@ paraList(8) = 50;
 % paraList(5) = 0.5;
 % paraList(6) = 0.5;
 % paraList(7) = 0.5;
-% paraList(8) = 50;
 
 % TEST, TO BE DELETE
 % [attackedWmImageFTableX, attackedWmImageFTableY, attackedWmImageFTableF_uint] = image2ftable(wmImage_uint);
 % attackedWmImage_uint = wmImage_uint;
 % TEST, TO BE DELETE
 
-attackedWmImage_uint = attackGrayUint(wmImage_uint, attackType, paraList(attackType));
+[attackedWmImageFTableX, attackedWmImageFTableY, attackedWmImageFTableF_uint, attackedWmImage_uint] = attackGrayUintLossyless(wmImage_uint, attackType, paraList(attackType));
 
 if isShowProcess
 	attackedWmImage = uint8(attackedWmImage_uint);
@@ -251,7 +248,7 @@ end
 % ==========================
 % Normalization
 % ==========================
-[normAttWmImage_uint, normAttFTableX, normAttFTableY, normAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImage(attackedWmImage_uint, normHeight, normWidth, false);
+[normAttWmImage_uint, normAttFTableX, normAttFTableY, normAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImageLossyless(attackedWmImageFTableX, attackedWmImageFTableY, attackedWmImageFTableF_uint, normHeight, normWidth, false);
 
 if isShowProcess
 	normAttWmImage = uint8(normAttWmImage_uint);

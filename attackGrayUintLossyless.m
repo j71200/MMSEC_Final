@@ -10,7 +10,8 @@ function [fTableX, fTableY, fTableF_uint, attackedImage_uint] = attackGrayUintLo
 %5 - Shearing in x without Crop
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
-%8 - Arbitrary matrix without Crop
+%8 - JPEG Compression
+%9 - Arbitrary matrix without Crop
 
 % ================================================
 % Shift down with Crop
@@ -146,10 +147,20 @@ elseif attackType == 7
 
 	disp(['Shearing in x&y without Crop']);
 
+
 % ================================================
 % Abritrary matrix without Crop
 % ================================================
 elseif attackType == 8
+	imwrite(uint8(originalImage_uint), './Experiment/compressed_temp.jpg', 'Quality', para);
+	attackedImage_uint = uint64(imread('./Experiment/compressed_temp.jpg'));
+	[fTableX, fTableY, fTableF_uint] = image2ftable(attackedImage_uint);
+	disp(['JPEG Compression']);
+
+% ================================================
+% Abritrary matrix without Crop
+% ================================================
+elseif attackType == 9
 	AbrMatrix = para * rand(2);
 	disp('AbrMatrix==============start');
 	AbrMatrix(1,1)

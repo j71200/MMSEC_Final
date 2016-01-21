@@ -10,7 +10,8 @@ function attackedImage_uint = attackGrayUint(originalImage_uint, attackType, par
 %5 - Shearing in x without Crop
 %6 - Shearing in y without Crop
 %7 - Shearing in x&y without Crop
-%8 - Arbitrary matrix without Crop
+%8 - JPEG Compression
+%9 - Arbitrary matrix without Crop
 
 % ================================================
 % Shift down with Crop
@@ -59,21 +60,18 @@ elseif attackType == 2
 % Rotate without Crop
 % ================================================
 elseif attackType == 3
+	% theta = deg2rad(para);
+	% rotateMatrix = [cos(theta) sin(theta); -sin(theta) cos(theta)];
+	% [fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
+	% fTableXY = [fTableX fTableY];
+	% fTableXY = (rotateMatrix * fTableXY')';
+	% fTableX = fTableXY(:, 1);
+	% fTableY = fTableXY(:, 2);
+	% attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
+
 	rotateDegree = para;
-	theta = deg2rad(rotateDegree);
-	rotateMatrix = [cos(theta) sin(theta); -sin(theta) cos(theta)];
-	[fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
-	fTableXY = [fTableX fTableY];
-	fTableXY = (rotateMatrix * fTableXY')';
-	fTableX = fTableXY(:, 1);
-	fTableY = fTableXY(:, 2);
-	attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
-
-	% figure;
-	% imshow(uint8(attackedImage_uint));
-
-	% attackedImage_uint = imrotate(uint8(originalImage_uint), rotateDegree, 'nearest');
-	% attackedImage_uint = uint64(attackedImage_uint);
+	attackedImage_uint = imrotate(uint8(originalImage_uint), rotateDegree, 'nearest');
+	attackedImage_uint = uint64(attackedImage_uint);
 
 	disp(['Rotate ' num2str(rotateDegree) ' degree without Crop']);
 
@@ -83,17 +81,13 @@ elseif attackType == 3
 elseif attackType == 4
 	scaleSize = para;
 
-	[fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
-	fTableX = fTableX * scaleSize;
-	fTableY = fTableY * scaleSize;
-	% fTableXY = [fTableX fTableY];
-	% fTableXY = (rotateMatrix * fTableXY')';
-	% fTableX = fTableXY(:, 1);
-	% fTableY = fTableXY(:, 2);
-	attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
+	% [fTableX, fTableY, fTableF_uint] = image2ftable(originalImage_uint);
+	% fTableX = fTableX * scaleSize;
+	% fTableY = fTableY * scaleSize;
+	% attackedImage_uint = fTable2image(fTableX, fTableY, fTableF_uint);
 
-	% attackedImage_uint = imresize(uint8(originalImage_uint), scaleSize);
-	% attackedImage_uint = uint64(attackedImage_uint);
+	attackedImage_uint = imresize(uint8(originalImage_uint), scaleSize);
+	attackedImage_uint = uint64(attackedImage_uint);
 
 	disp(['Scale ' num2str(scaleSize) ' without Crop']);
 
@@ -144,6 +138,15 @@ elseif attackType == 7
 % Abritrary matrix without Crop
 % ================================================
 elseif attackType == 8
+	imwrite(uint8(originalImage_uint), './Experiment/compressed_temp.jpg', 'Quality', para);
+	attackedImage_uint = uint64(imread('./Experiment/compressed_temp.jpg'));
+	[fTableX, fTableY, fTableF_uint] = image2ftable(attackedImage_uint);
+	disp(['JPEG Compression']);
+
+% ================================================
+% Abritrary matrix without Crop
+% ================================================
+elseif attackType == 9
 	AbrMatrix = para * rand(2);
 	disp('AbrMatrix==============start');
 	AbrMatrix(1,1)

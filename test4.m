@@ -1,27 +1,10 @@
 clear
 clc
 
-a = 19223;
-e = 2550000;
-n = 1667 * 1669;
+originalImage = imread('./Experiment/lena.bmp');
 
+originalImage = rgb2gray(originalImage);
 
-base = 19923;
-power = randi([0, 255], 512);
-modNum = 1667 * 1669;
-
-res = fastPowerMod(base, power, modNum);
-
-
-% tic
-% testPowerMod(a, e, n)
-% toc
-
-% tic
-% powerMod(a, e, n)
-% toc
-
-% tic
-% mod(a^e, n)
-% toc
+imwrite(originalImage, './Experiment/compressed_lena.jpg', 'Quality', 10);
+attack = imread('./Experiment/compressed_lena.jpg');
 
