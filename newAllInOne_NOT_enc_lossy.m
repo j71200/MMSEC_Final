@@ -127,7 +127,7 @@ end
 % ==========================
 % Pre-normalization
 % ==========================
-[normalWmImage_uint, normWmFTableX, normWmFTableY, normWmFTableF_uint, SYXMatrix, meanVector] = normalizeImage(wmImage_uint, normHeight, normWidth, false);
+[normalWmImage_uint, normWmFTableX, normWmFTableY, normWmFTableF_uint, SYXMatrix, meanVector] = normalizeImage(wmImage_uint, normHeight, normWidth, false, 2);
 
 if isShowProcess
 	normalWmImage = uint8(normalWmImage_uint);
@@ -251,7 +251,7 @@ end
 % ==========================
 % Normalization
 % ==========================
-[normAttWmImage_uint, normAttFTableX, normAttFTableY, normAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImage(attackedWmImage_uint, normHeight, normWidth, false);
+[normAttWmImage_uint, normAttFTableX, normAttFTableY, normAttFTableF_uint, attSYXMatrix, attMeanVector] = normalizeImage(attackedWmImage_uint, normHeight, normWidth, false, 2);
 
 if isShowProcess
 	normAttWmImage = uint8(normAttWmImage_uint);

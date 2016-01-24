@@ -107,6 +107,8 @@ if isShowProcess
 
 	figure('name', 'trickedWmImage');
 	imshow(trickedWmImage);
+	disp('nnz(trickedWmImage): ');
+	nnz(trickedWmImage)
 end
 
 % ==========================
@@ -198,6 +200,8 @@ if isShowProcess
 	attackedWmImage = uint8(attackedWmImage_uint);
 	figure('name','attackedWmImage');
 	imshow(attackedWmImage);
+	disp('nnz(attackedWmImage): ');
+	nnz(attackedWmImage)
 end
 
 
@@ -269,7 +273,6 @@ decTrickImage_uint = paillierDecrypt(regEncryptedImage_uint, n_uint, lambda_uint
 decImage_uint = (decTrickImage_uint + trickShift_uint - 2) / trickFactor_uint;
 
 recImage = uint8(decImage_uint);
-
 if isShowProcess
 	figure('name', 'recImage');
 	imshow(recImage);

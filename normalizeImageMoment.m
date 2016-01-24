@@ -1,4 +1,4 @@
-function [ normalizedImg_uint, normFTableX, normFTableY, normFTableF_uint, SYXMatrix, meanVector ] = normalizeImage( inputImage_uint, normHeight, normWidth, isShowProcess, selectBeta)
+function [ normalizedImg_uint, normFTableX, normFTableY, normFTableF_uint, SYXMatrix, meanVector, muPhase0, muPhase1, muPhase2 ] = normalizeImageMoment( inputImage_uint, normHeight, normWidth, isShowProcess, selectBeta)
 %NORMALIZEIMAGE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -23,6 +23,7 @@ fTableX1 = fTableX - x_mean;
 fTableY1 = fTableY - y_mean;
 fTableF1_uint = fTableF_uint;
 
+muPhase0 = double([m_1_0_uint, m_0_0_uint, m_0_1_uint]');
 
 % if isShowProcess
 % 	im1_uint = fTable2image(fTableX, fTableY, fTableF_uint);
@@ -61,6 +62,7 @@ fTableX2 = fTableX1 + mBeta * fTableY1;
 fTableY2 = fTableY1;
 fTableF2_uint = fTableF1_uint;
 
+muPhase1 = [mu_3_0_dbl, mu_2_1_dbl, mu_1_2_dbl, mu_0_3_dbl]';
 
 % if isShowProcess
 % 	im2_dbl = fTable2image(fTable2);
@@ -91,6 +93,7 @@ fTableX3 = fTableX2;
 fTableY3 = fTableY2 + mGamma * fTableX2;
 fTableF3_uint = fTableF2_uint;
 
+muPhase2 = [mu_1_1_dbl, mu_2_0_dbl]';
 
 % im3_dbl = fTable2image(fTable3);
 % if isShowProcess
