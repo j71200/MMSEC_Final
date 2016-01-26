@@ -47,8 +47,8 @@ mu_3_0_dbl = centralMoment(fTableX1, fTableY1, fTableF1_uint, 3, 0);
 syms x;
 mBeta = double(solve(mu_0_3_dbl*x^3 + 3*mu_1_2_dbl*x^2 + 3*mu_2_1_dbl*x + mu_3_0_dbl, x, 'Real', true));
 
-disp('Beta:')
-sort(mBeta)
+% disp('Beta:')
+% sort(mBeta)
 
 if length(mBeta) > 1
 	mBeta = sort(mBeta);
